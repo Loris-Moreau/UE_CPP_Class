@@ -47,14 +47,14 @@ void UGravityGunController::onThrowObjectInputTriggered(const struct FInputActio
 	if (!GravityGunComponent.IsValid())
 		return;
 	
-	const float thowValue = Value.Get<float>();
+	const float throwValue = Value.Get<float>();
 	
-	if( thowValue > 0.f)
+	if( throwValue > 0.f)
 	{
-		GravityGunComponent->onThrowObjectInputTPressed();
+		GravityGunComponent->onThrowObjectInputPressed();
 	}
 	else
 	{
-		GravityGunComponent->onThrowObjectInputTRelease();
+		GravityGunComponent->onThrowObjectInputRelease();
 	}
 }

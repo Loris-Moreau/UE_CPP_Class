@@ -31,12 +31,12 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	UE_LOG(LogTemp, Log, TEXT("Take Press"));
 }
 
-void UGravityGunComponent::onThrowObjectInputTPressed()
+void UGravityGunComponent::onThrowObjectInputPressed()
 {
 	UE_LOG(LogTemp, Log, TEXT("Throw Press"));
 }
 
-void UGravityGunComponent::onThrowObjectInputTRelease()
+void UGravityGunComponent::onThrowObjectInputRelease()
 {
 	UE_LOG(LogTemp, Log, TEXT("Throw Release"));
 }
