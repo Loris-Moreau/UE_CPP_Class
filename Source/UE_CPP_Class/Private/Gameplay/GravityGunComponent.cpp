@@ -1,25 +1,25 @@
 #include "Gameplay/GravityGunComponent.h"
 
-// Sets default values for this component's properties
+#include "Engine/World.h"
+#include "Public/Player/Main_Player.h"
+#include "Kismet/GameplayStatics.h"
+
 UGravityGunComponent::UGravityGunComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
-
-// Called when the game starts
 void UGravityGunComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Character = Cast<AMain_Player>(GetOwner());
+	PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+
+	GravityGunCollisionChannel = UEngineTypes::ConvertToCollisionChannel(GravityGunCollisionTraceChannel);
 }
 
-
-// Called every frame
 void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -28,7 +28,20 @@ void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UGravityGunComponent::onTakeObjectInputPressed()
 {
-	UE_LOG(LogTemp, Log, TEXT("Take Press"));
+	// First - Launch RayCast
+	FVector RaycastStart = PlayerCameraManager->GetCameraLocation();
+	FVector RaycastEnd = RaycastStart + PlayerCameraManager->GetActorForwardVector() * raySize;
+
+	// Second - Prepare Param
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Character.Get());
+	
+	// Third - Launch Raycast
+	const bool bHit =	GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
+	if(!bHit)
+		return;
+	
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()

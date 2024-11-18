@@ -22,4 +22,17 @@ public:
 	void onTakeObjectInputPressed();
 	void onThrowObjectInputPressed();
 	void onThrowObjectInputRelease();
+
+
+protected:
+	TWeakObjectPtr<class AMain_Player> Character = nullptr;
+	TWeakObjectPtr<class APlayerCameraManager> PlayerCameraManager = nullptr;
+	
+	// Collision
+	UPROPERTY(EditDefaultsOnly, Category="Gravity Gun|Collision")
+	TEnumAsByte<ETraceTypeQuery> GravityGunCollisionTraceChannel;
+	ECollisionChannel GravityGunCollisionChannel;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gravity Gun|Collision", meta=(ClampMin="100.0",ClampMax="1000.0"))
+	float raySize = 500.0; // 500 = 5 Meters
 };
