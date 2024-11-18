@@ -1,6 +1,8 @@
 #include "Gameplay/GravityGunComponent.h"
 
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "Framework/MultiBox/MultiBoxDefs.h"
 #include "Public/Player/Main_Player.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -36,12 +38,18 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Character.Get());
+
+#if !UE_BUILD_SHIPPING
+	if (DrawDebugRaycast)
+	{
+		DrawDebugLine(GetWorld(), RaycastStart, RaycastEnd, FColor::Red, false, TimerDebugRaycast, 0, 0.5);
+	}
+#endif
 	
 	// Third - Launch Raycast
 	const bool bHit =	GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
 	if(!bHit)
 		return;
-	
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()
