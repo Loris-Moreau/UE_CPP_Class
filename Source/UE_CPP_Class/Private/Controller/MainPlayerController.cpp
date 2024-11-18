@@ -75,3 +75,18 @@ void AMainPlayerController::Look(const FInputActionValue& Value)
 		Character->AddControllerPitchInput(LookValue.Y);
 	}
 }
+
+void AMainPlayerController::AddYawInput(float Val)
+{
+	float multipliedValue = Val * mouseSensiX;
+	
+	Super::AddYawInput(multipliedValue);
+}
+
+void AMainPlayerController::AddPitchInput(float Val)
+{
+	float multipliedValue = Val * mouseSensiY;
+	
+	Super::AddPitchInput(multipliedValue);
+}
+
