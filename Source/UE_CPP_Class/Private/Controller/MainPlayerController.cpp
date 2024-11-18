@@ -63,15 +63,15 @@ void AMainPlayerController::Look(const FInputActionValue& Value)
 		return;
 	
 	const FVector2D LookValue = Value.Get<FVector2D>();
-
-	if(LookValue.Y != 0.f)
-	{
-		// Pitch
-		Character->AddControllerPitchInput(LookValue.Y);
-	}
+	
 	if(LookValue.X != 0.f)
 	{
 		// Yaw
 		Character->AddControllerYawInput(LookValue.X);
+	}
+	if(LookValue.Y != 0.f)
+	{
+		// Pitch
+		Character->AddControllerPitchInput(LookValue.Y);
 	}
 }
