@@ -14,9 +14,13 @@ class UE_CPP_CLASS_API AMainPlayerController : public APlayerController
 
 public:
 	virtual void SetupInputComponent() override;
+	virtual void SetPawn(APawn* InPawn) override;
 
-	// Inputs
 protected:
+// Character
+	class AMain_Player* Character = nullptr;
+	
+// Inputs
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
 	class UInputMappingContext* InputMapping;
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Movement")
@@ -24,5 +28,4 @@ protected:
 
 protected:
 	void MovePlayer(const struct FInputActionValue& Value);
-
 };
