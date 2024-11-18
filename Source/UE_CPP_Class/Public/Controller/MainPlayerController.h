@@ -1,5 +1,11 @@
 #pragma once
 
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputComponent.h"
+#include "InputAction.h"
+#include "InputActionValue.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "MainPlayerController.generated.h"
@@ -21,6 +27,9 @@ protected:
 // Character
 	class AMain_Player* Character = nullptr;
 	
+//Grav Gun Controller
+	TWeakObjectPtr<class UGravityGunController> GravityGunController = nullptr;
+	
 // Inputs
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
 	class UInputMappingContext* InputMapping;
@@ -30,7 +39,7 @@ protected:
 	class UInputAction* InputActionLook;
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
 	class UInputAction* InputActionJump;
-
+	
 	
 	void MovePlayer(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);

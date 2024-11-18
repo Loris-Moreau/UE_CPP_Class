@@ -1,12 +1,9 @@
 #include "Controller/MainPlayerController.h"
 
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
-#include "EnhancedInputComponent.h"
-#include "InputAction.h"
-#include "InputActionValue.h"
+#include "Controller/GravityGunController.h"
 #include "Engine/LocalPlayer.h"
 #include "Public/Player/Main_Player.h"
+#include "Public/Controller/GravityGunController.h"
 
 void AMainPlayerController::SetupInputComponent()
 {
@@ -39,7 +36,15 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
 
+	// To Bind Only Once
+	if (Character)
+		return;
+	
 	Character = Cast<AMain_Player>(InPawn);
+	
+	GravityGunController = GetComponentByClass<UGravityGunController>();
+	if(GravityGunController.IsValid())
+		GravityGunController->SetupInputComponentGravityGunController(InputComponent);
 }
 
 void AMainPlayerController::MovePlayer(const FInputActionValue& Value)
