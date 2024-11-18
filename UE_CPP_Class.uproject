@@ -16,10 +16,12 @@
 			"Enabled": true,
 			"TargetAllowList": [
 				"Editor"
-			],
-			[
-				"Name": "Houdini"
 			]
+		},
+		
+		{
+			"Name": "HoudiniEngine",
+			"Enabled": false
 		}
 	]
 }
