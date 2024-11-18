@@ -33,11 +33,11 @@ protected:
 	TEnumAsByte<ETraceTypeQuery> GravityGunCollisionTraceChannel;
 	ECollisionChannel GravityGunCollisionChannel;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Gravity Gun|Collision", meta=(ClampMin="100.0",ClampMax="1000.0"))
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision", meta = (ClampMin = "100.0",ClampMax = "1000.0"))
 	float raySize = 500.0; // 500 = 5 Meters
 
 	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug")
 	bool DrawDebugRaycast = false;
-	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug", meta=(EditCondition="DrawDebugRaycast", EditConditionHides, ClampMax = "5.0"))
+	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug", meta = (EditCondition = "DrawDebugRaycast", EditConditionHides, ClampMax = "5.0"))
 	float TimerDebugRaycast = 0.5f;
 };

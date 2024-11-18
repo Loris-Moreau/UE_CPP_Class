@@ -50,6 +50,8 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	const bool bHit =	GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
 	if(!bHit)
 		return;
+
+	UE_LOG(LogTemp, Log, TEXT("Hit : "), *HitResult.GetActor()->GetName());
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()
