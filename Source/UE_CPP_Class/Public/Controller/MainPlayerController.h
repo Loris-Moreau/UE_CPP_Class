@@ -24,15 +24,17 @@ protected:
 // Inputs
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
 	class UInputMappingContext* InputMapping;
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Movement")
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
 	class UInputAction* InputActionMove;
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Look")
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
 	class UInputAction* InputActionLook;
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
+	class UInputAction* InputActionJump;
 
 	
 	void MovePlayer(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
-
+	void Jump();
 
 	// Mouse sensitivity
 	UPROPERTY(EditDefaultsOnly,Category = "Sensitivity", meta=(ToolTip="Mouse Sensitivity for X axis", ClampMin="0.1",ClampMax="3.0"))

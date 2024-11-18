@@ -14,6 +14,7 @@ void AMainPlayerController::SetupInputComponent()
 
 	// Bind to subsystem
 	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	
 	if (!EnhancedInputSubsystem)
 		return;
 
@@ -22,13 +23,16 @@ void AMainPlayerController::SetupInputComponent()
 
 	// Get Enhanced input comp
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
+	
 	if (!EnhancedInputComponent)
 		return;
+	
 	EnhancedInputComponent->ClearActionBindings();
 
 	// Bind Input Actions
 	EnhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this, &AMainPlayerController::MovePlayer);
 	EnhancedInputComponent->BindAction(InputActionLook, ETriggerEvent::Triggered, this, &AMainPlayerController::Look);
+	EnhancedInputComponent->BindAction(InputActionJump, ETriggerEvent::Triggered, this, &AMainPlayerController::Jump);
 }
 
 void AMainPlayerController::SetPawn(APawn* InPawn)
@@ -74,6 +78,11 @@ void AMainPlayerController::Look(const FInputActionValue& Value)
 		// Pitch
 		Character->AddControllerPitchInput(LookValue.Y);
 	}
+}
+
+void AMainPlayerController::Jump()
+{
+	Character->Jump();
 }
 
 void AMainPlayerController::AddYawInput(float Val)
