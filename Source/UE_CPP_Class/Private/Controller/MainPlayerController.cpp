@@ -26,8 +26,9 @@ void AMainPlayerController::SetupInputComponent()
 		return;
 	EnhancedInputComponent->ClearActionBindings();
 
-	// Bind Movements
+	// Bind Input Actions
 	EnhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this, &AMainPlayerController::MovePlayer);
+	EnhancedInputComponent->BindAction(InputActionLook, ETriggerEvent::Triggered, this, &AMainPlayerController::Look);
 }
 
 void AMainPlayerController::SetPawn(APawn* InPawn)
@@ -53,5 +54,24 @@ void AMainPlayerController::MovePlayer(const FInputActionValue& Value)
 	if(MoveValue.X != 0.f )
 	{
 		Character->AddMovementInput(Character->GetActorRightVector(), MoveValue.X);
+	}
+}
+
+void AMainPlayerController::Look(const FInputActionValue& Value)
+{
+	if(!Character)
+		return;
+	
+	const FVector2D LookValue = Value.Get<FVector2D>();
+
+	if(LookValue.Y != 0.f)
+	{
+		// Pitch
+		Character->AddControllerPitchInput(LookValue.Y);
+	}
+	if(LookValue.X != 0.f)
+	{
+		// Yaw
+		Character->AddControllerYawInput(LookValue.X);
 	}
 }

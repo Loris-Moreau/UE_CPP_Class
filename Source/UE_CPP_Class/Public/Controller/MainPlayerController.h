@@ -25,7 +25,10 @@ protected:
 	class UInputMappingContext* InputMapping;
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Movement")
 	class UInputAction* InputActionMove;
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Look")
+	class UInputAction* InputActionLook;
 
 protected:
 	void MovePlayer(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
 };
