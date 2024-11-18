@@ -9,12 +9,15 @@ UCLASS(Abstract, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableCom
 class UE_CPP_CLASS_API UGravityGunController : public UActorComponent
 {
 	GENERATED_BODY()
-
+	
+protected:
+	TWeakObjectPtr<class AMain_Player> Character = nullptr;
+	TWeakObjectPtr<class UGravityGunComponent> GravityGunComponent = nullptr;
+	
 public:	
 	UGravityGunController();
 
-	void SetupInputComponentGravityGunController(TObjectPtr<class UInputComponent> InputComponent);
-
+	void SetupInputComponentGravityGunController(TObjectPtr<class UInputComponent> InputComponent, class AMain_Player* InCharacter);
 	
 protected:
 	virtual void BeginPlay() override;

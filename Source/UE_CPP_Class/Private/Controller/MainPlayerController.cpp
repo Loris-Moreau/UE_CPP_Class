@@ -41,10 +41,12 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 		return;
 	
 	Character = Cast<AMain_Player>(InPawn);
+	if (!Character)
+		return;
 	
 	GravityGunController = GetComponentByClass<UGravityGunController>();
 	if(GravityGunController.IsValid())
-		GravityGunController->SetupInputComponentGravityGunController(InputComponent);
+		GravityGunController->SetupInputComponentGravityGunController(InputComponent, Character);
 }
 
 void AMainPlayerController::MovePlayer(const FInputActionValue& Value)

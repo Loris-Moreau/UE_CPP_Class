@@ -26,3 +26,18 @@ void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	
 }
 
+void UGravityGunComponent::onTakeObjectInputPressed()
+{
+	UE_LOG(LogTemp, Log, TEXT("Take Press"));
+}
+
+void UGravityGunComponent::onThrowObjectInputTPressed()
+{
+	UE_LOG(LogTemp, Log, TEXT("Throw Press"));
+}
+
+void UGravityGunComponent::onThrowObjectInputTRelease()
+{
+	UE_LOG(LogTemp, Log, TEXT("Throw Release"));
+}
+

@@ -18,5 +18,8 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
+	void onTakeObjectInputPressed();
+	void onThrowObjectInputTPressed();
+	void onThrowObjectInputTRelease();
 };

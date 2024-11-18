@@ -6,13 +6,16 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 
+#include "Public/Player/Main_Player.h"
+#include "Public/Gameplay/GravityGunComponent.h"
+
 
 UGravityGunController::UGravityGunController()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UGravityGunController::SetupInputComponentGravityGunController(TObjectPtr<UInputComponent> InputComponent)
+void UGravityGunController::SetupInputComponentGravityGunController(TObjectPtr<UInputComponent> InputComponent, class AMain_Player* InCharacter)
 {
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	if (!EnhancedInputComponent)
@@ -20,6 +23,10 @@ void UGravityGunController::SetupInputComponentGravityGunController(TObjectPtr<U
 	
 	EnhancedInputComponent->BindAction(InputActionTake, ETriggerEvent::Triggered, this, &UGravityGunController::onTakeObjectInputPressed);
 	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Triggered, this, &UGravityGunController::onThrowObjectInputTriggered);
+
+	
+	Character = InCharacter;
+	GravityGunComponent = Character->GetComponentByClass<UGravityGunComponent>();
 }
 
 void UGravityGunController::BeginPlay()
@@ -29,10 +36,25 @@ void UGravityGunController::BeginPlay()
 
 void UGravityGunController::onTakeObjectInputPressed()
 {
-	UE_LOG(LogTemp, Log, TEXT("Take"));
+	if (GravityGunComponent.IsValid())
+	{
+		GravityGunComponent->onTakeObjectInputPressed();
+	}
 }
 
 void UGravityGunController::onThrowObjectInputTriggered(const struct FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Log, TEXT("Throw"));
+	if (!GravityGunComponent.IsValid())
+		return;
+	
+	const float thowValue = Value.Get<float>();
+	
+	if( thowValue > 0.f)
+	{
+		GravityGunComponent->onThrowObjectInputTPressed();
+	}
+	else
+	{
+		GravityGunComponent->onThrowObjectInputTRelease();
+	}
 }
