@@ -36,6 +36,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision", meta = (ClampMin = "100.0",ClampMax = "1000.0"))
 	float raySize = 500.0; // 500 = 5 Meters
 
+	// PickUp
+	TWeakObjectPtr<AActor> CurrentPickup = nullptr;
+	TWeakObjectPtr<class UPickupComponent> CurrentPickupComponent = nullptr;
+	
+	// Debug
 	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug")
 	bool DrawDebugRaycast = false;
 	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug", meta = (EditCondition = "DrawDebugRaycast", EditConditionHides, ClampMax = "5.0"))

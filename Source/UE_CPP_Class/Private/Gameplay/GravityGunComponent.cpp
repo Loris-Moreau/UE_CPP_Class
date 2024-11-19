@@ -5,6 +5,8 @@
 #include "Framework/MultiBox/MultiBoxDefs.h"
 #include "Public/Player/Main_Player.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Gameplay/PickupComponent.h"
 
 UGravityGunComponent::UGravityGunComponent()
 {
@@ -50,8 +52,18 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	const bool bHit =	GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
 	if(!bHit)
 		return;
+	
+	// Check for pickup component 
+	CurrentPickupComponent = HitResult.GetActor()->GetComponentByClass<UPickupComponent>();
+	if (!CurrentPickupComponent.IsValid())
+		return;
 
-	UE_LOG(LogTemp, Log, TEXT("Hit : "), *HitResult.GetActor()->GetName());
+	// Gets it's pointer
+	CurrentPickup = HitResult.GetActor();
+	
+	FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
+	UE_LOG(LogTemp, Log, TEXT("Hit : %s"), *ActorName);
+
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()
