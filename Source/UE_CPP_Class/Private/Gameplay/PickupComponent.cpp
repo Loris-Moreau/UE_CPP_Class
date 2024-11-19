@@ -1,4 +1,6 @@
 #include "Gameplay/PickupComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 
 UPickupComponent::UPickupComponent()
 {
@@ -9,5 +11,4 @@ UPickupComponent::UPickupComponent()
 void UPickupComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }

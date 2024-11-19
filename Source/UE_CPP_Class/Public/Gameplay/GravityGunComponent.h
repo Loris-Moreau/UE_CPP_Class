@@ -57,6 +57,8 @@ protected:
 	float pickupHeightFromPlayer = -15.0;
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "50.0", ClampMax = "1000.0"))
 	float PickupThrowForce = 7000.0;
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup")
+	FVector PickupAngularForce = {450000.0, 250000.0, 500000.0};
 	
 	void UpdatePickupLocation();
 	void ReleasePickup(bool throwPickup = false);

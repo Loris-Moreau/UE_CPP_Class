@@ -81,11 +81,11 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	UE_LOG(LogTemp, Log, TEXT("Hit : %s"), *ActorName);
 
 	// Update collision profile & physics
-	CurrentPickupStaticMesh->SetEnableGravity(false);
 	previousCollisionProfileName = CurrentPickupStaticMesh->GetCollisionProfileName();
 	CurrentPickupStaticMesh->SetSimulatePhysics(false);
-
+	CurrentPickupStaticMesh->SetEnableGravity(false);
 	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+	CurrentPickupStaticMesh->SetEnableGravity(false);
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()
@@ -151,6 +151,8 @@ void UGravityGunComponent::ReleasePickup(bool throwPickup)
 	{
 		const FVector ImpulseForce = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce;
 		CurrentPickupStaticMesh->AddImpulse(ImpulseForce);
+		const FVector AngularImpulse = {FMath::RandRange(.0, PickupAngularForce.X), FMath::RandRange(.0, PickupAngularForce.Y), FMath::RandRange(.0, PickupAngularForce.Z)};
+		CurrentPickupStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
 	}
 	
 	CurrentPickup = nullptr;
