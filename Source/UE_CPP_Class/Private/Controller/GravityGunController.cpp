@@ -22,7 +22,10 @@ void UGravityGunController::SetupInputComponentGravityGunController(TObjectPtr<U
 		return;
 	
 	EnhancedInputComponent->BindAction(InputActionTake, ETriggerEvent::Triggered, this, &UGravityGunController::onTakeObjectInputPressed);
+	
 	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Triggered, this, &UGravityGunController::onThrowObjectInputTriggered);
+	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Triggered, this, &UGravityGunController::ThrowHoldCount);
+
 	
 	EnhancedInputComponent->BindAction(InputActionRayGrow, ETriggerEvent::Triggered, this, &UGravityGunController::RaySizeChange);
 
@@ -59,6 +62,12 @@ void UGravityGunController::onThrowObjectInputTriggered(const struct FInputActio
 	{
 		GravityGunComponent->onThrowObjectInputRelease();
 	}
+	
+}
+
+void UGravityGunController::ThrowHoldCount()
+{
+	GravityGunComponent->ThrowPowerCount();
 }
 
 void UGravityGunController::RaySizeChange()

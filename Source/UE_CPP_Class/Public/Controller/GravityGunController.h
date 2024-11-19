@@ -24,6 +24,7 @@ protected:
 
 	void onTakeObjectInputPressed();
 	void onThrowObjectInputTriggered(const struct FInputActionValue& Value);
+	void ThrowHoldCount();
 	void RaySizeChange();
 	
 // Inputs
@@ -33,4 +34,6 @@ protected:
 	class UInputAction* InputActionThrow;		
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
 	class UInputAction* InputActionRayGrow;		
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
+	class UInputAction* ThrowMulti;	
 };

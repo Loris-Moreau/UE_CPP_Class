@@ -1,5 +1,7 @@
 #include "Gameplay/GravityGunComponent.h"
 
+#include <cmath>
+
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "Framework/MultiBox/MultiBoxDefs.h"
@@ -77,28 +79,48 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	if (CurrentPickup.IsValid())
 		return;
 	
-	FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
-	UE_LOG(LogTemp, Log, TEXT("Hit : %s"), *ActorName);
+	//FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
+	//UE_LOG(LogTemp, Log, TEXT("Hit : %s"), *ActorName);
 
 	// Update collision profile & physics
 	previousCollisionProfileName = CurrentPickupStaticMesh->GetCollisionProfileName();
 	CurrentPickupStaticMesh->SetSimulatePhysics(false);
 	CurrentPickupStaticMesh->SetEnableGravity(false);
 	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
-	CurrentPickupStaticMesh->SetEnableGravity(false);
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()
 {
-	UE_LOG(LogTemp, Log, TEXT("Throw Press"));
 	if (!CurrentPickup.IsValid())
-		return;
+ 		return;
+
+	
+	UE_LOG(LogTemp, Log, TEXT("Throw Press"));
+	
 }
 
 void UGravityGunComponent::onThrowObjectInputRelease()
 {
+	if (!CurrentPickup.IsValid())
+		return;
+	
+	
 	ReleasePickup(true);
+	
 	UE_LOG(LogTemp, Log, TEXT("Throw Release"));
+}
+
+void UGravityGunComponent::ThrowPowerCount()
+{
+	//FMath::FInterpTo(PickupThrowForce, PickupMaxThrowForce, throwTimeElapsed, 1);
+	PickupThrowForce = FMath::Lerp(PickupThrowForce, PickupMaxThrowForce, throwTimeElapsed);
+	
+	if (PickupThrowForce >= PickupMaxThrowForce)
+	{
+		PickupThrowForce = PickupMaxThrowForce;
+	}
+	
+	UE_LOG(LogTemp, Log, TEXT("Force : %f"), PickupThrowForce)
 }
 
 void UGravityGunComponent::RaySizeChange()
@@ -121,7 +143,7 @@ void UGravityGunComponent::RaySizeChange()
 		raySize -= raySizeUpdate;
 	}
 	
-	UE_LOG(LogTemp, Log, TEXT("ray size : %f"), raySize);
+	//UE_LOG(LogTemp, Log, TEXT("ray size : %f"), raySize);
 }
 
 void UGravityGunComponent::UpdatePickupLocation()
@@ -134,7 +156,7 @@ void UGravityGunComponent::UpdatePickupLocation()
 
 	CurrentPickup->SetActorLocationAndRotation(NewPickupLocation, NewPickupRotation);
 
-	UE_LOG(LogTemp, Log, TEXT("pos : %s"), *NewPickupLocation.ToString());
+	//UE_LOG(LogTemp, Log, TEXT("pos : %s"), *NewPickupLocation.ToString());
 }
 
 void UGravityGunComponent::ReleasePickup(bool throwPickup)
@@ -151,12 +173,17 @@ void UGravityGunComponent::ReleasePickup(bool throwPickup)
 	{
 		const FVector ImpulseForce = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce;
 		CurrentPickupStaticMesh->AddImpulse(ImpulseForce);
+		
 		const FVector AngularImpulse = {FMath::RandRange(.0, PickupAngularForce.X), FMath::RandRange(.0, PickupAngularForce.Y), FMath::RandRange(.0, PickupAngularForce.Z)};
 		CurrentPickupStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
+		
+		// check for destroy
+		if (CurrentPickupComponent->GetPickupType() == EPickupType::DestroyOnThrow)
+			CurrentPickupComponent->StartDestructionTimer();
 	}
 	
+	// Resets Refs
 	CurrentPickup = nullptr;
 	CurrentPickupComponent = nullptr;
 	CurrentPickupStaticMesh = nullptr;
-	
 }

@@ -23,8 +23,11 @@ public:
 	void onThrowObjectInputPressed();
 	void onThrowObjectInputRelease();
 
+	void ThrowPowerCount();
+
 	void RaySizeChange();
 
+	float throwTimeElapsed = 0.0;
 	
 protected:
 	TWeakObjectPtr<class AMain_Player> Character = nullptr;
@@ -51,21 +54,21 @@ protected:
 	TWeakObjectPtr<class UStaticMeshComponent> CurrentPickupStaticMesh = nullptr;
 	FName previousCollisionProfileName = NAME_None;
 	
-	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "100.0", ClampMax = "1000.0"))
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "100.0", ClampMax = "500.0"))
 	float pickupDisanceFromPlayer = 200.0;
-	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "-200.0", ClampMax = "1000.0"))
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "-200.0", ClampMax = "200.0"))
 	float pickupHeightFromPlayer = -15.0;
-	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "50.0", ClampMax = "1000.0"))
-	float PickupThrowForce = 7000.0;
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "1000.0", ClampMax = "100000.0"))
+	float PickupThrowForce = 5000.0;
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup")
 	FVector PickupAngularForce = {450000.0, 250000.0, 500000.0};
-	
+
 	void UpdatePickupLocation();
 	void ReleasePickup(bool throwPickup = false);
 	
 	// Debug
 	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug")
 	bool DrawDebugRaycast = false;
-	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug", meta = (EditCondition = "DrawDebugRaycast", EditConditionHides, ClampMax = "5.0"))
+	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug", meta = (EditCondition = "DrawDebugRaycast", EditConditionHides,ClampMin = "0.1", ClampMax = "5.0"))
 	float TimerDebugRaycast = 0.5f;
 };
