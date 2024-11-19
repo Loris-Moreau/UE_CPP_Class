@@ -4,7 +4,6 @@
 
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
-#include "Framework/MultiBox/MultiBoxDefs.h"
 #include "Public/Player/Main_Player.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -32,6 +31,8 @@ void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdatePickupLocation();
+	
+	if(bIsThrowHeld)TimeThrowHeld += DeltaTime;
 }
 
 void UGravityGunComponent::onTakeObjectInputPressed()
@@ -87,6 +88,25 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 	CurrentPickupStaticMesh->SetSimulatePhysics(false);
 	CurrentPickupStaticMesh->SetEnableGravity(false);
 	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+
+	// Check Destroy
+	switch (CurrentPickupComponent->GetPickupType())
+	{
+	case EPickupType::DestroyOnPickup:
+		// Launch Timer
+		CurrentPickupComponent->StartDestructionTimer();
+		
+		// Bind callback to event
+		CurrentPickupComponent->OnPickupDestroy.AddUniqueDynamic(this, &UGravityGunComponent::OnHoldPickupDestroy);
+		break;
+		
+	case EPickupType::DestroyOnThrow:
+		CurrentPickupComponent->clearDestroyTimer();
+		break;
+		
+	default:
+		break;
+	}
 }
 
 void UGravityGunComponent::onThrowObjectInputPressed()
@@ -94,9 +114,7 @@ void UGravityGunComponent::onThrowObjectInputPressed()
 	if (!CurrentPickup.IsValid())
  		return;
 
-	
-	UE_LOG(LogTemp, Log, TEXT("Throw Press"));
-	
+	bIsThrowHeld = true;
 }
 
 void UGravityGunComponent::onThrowObjectInputRelease()
@@ -104,23 +122,7 @@ void UGravityGunComponent::onThrowObjectInputRelease()
 	if (!CurrentPickup.IsValid())
 		return;
 	
-	
 	ReleasePickup(true);
-	
-	UE_LOG(LogTemp, Log, TEXT("Throw Release"));
-}
-
-void UGravityGunComponent::ThrowPowerCount()
-{
-	//FMath::FInterpTo(PickupThrowForce, PickupMaxThrowForce, throwTimeElapsed, 1);
-	PickupThrowForce = FMath::Lerp(PickupThrowForce, PickupMaxThrowForce, throwTimeElapsed);
-	
-	if (PickupThrowForce >= PickupMaxThrowForce)
-	{
-		PickupThrowForce = PickupMaxThrowForce;
-	}
-	
-	UE_LOG(LogTemp, Log, TEXT("Force : %f"), PickupThrowForce)
 }
 
 void UGravityGunComponent::RaySizeChange()
@@ -155,35 +157,41 @@ void UGravityGunComponent::UpdatePickupLocation()
 	const FRotator NewPickupRotation = PlayerCameraManager->GetCameraRotation();
 
 	CurrentPickup->SetActorLocationAndRotation(NewPickupLocation, NewPickupRotation);
-
-	//UE_LOG(LogTemp, Log, TEXT("pos : %s"), *NewPickupLocation.ToString());
 }
 
-void UGravityGunComponent::ReleasePickup(bool throwPickup)
+void UGravityGunComponent::ReleasePickup(bool bPickupThrow)
 {
-	if (!CurrentPickup.IsValid())
+	if (CurrentPickupComponent->GetPickupType() == EPickupType::DestroyOnPickup)
+		CurrentPickupComponent->OnPickupDestroy.RemoveDynamic(this, &UGravityGunComponent::OnHoldPickupDestroy);
+	
+	if(!CurrentPickupStaticMesh.IsValid())
 		return;
-
-	// Reset collision & Physics
+	
 	CurrentPickupStaticMesh->SetCollisionProfileName(previousCollisionProfileName);
 	CurrentPickupStaticMesh->SetSimulatePhysics(true);
-	CurrentPickupStaticMesh->SetEnableGravity(true);
-	
-	if (throwPickup)
+
+	if(bPickupThrow)
 	{
-		const FVector ImpulseForce = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce;
-		CurrentPickupStaticMesh->AddImpulse(ImpulseForce);
+		float Force = FMath::GetMappedRangeValueClamped(FVector2d(0.f,TimeToReachMaxForce),FVector2d(1.f,MaxForce),TimeThrowHeld);
+		const FVector Impulse =PlayerCameraManager->GetActorForwardVector() * Force;
+		CurrentPickupStaticMesh->AddImpulse(Impulse);
 		
-		const FVector AngularImpulse = {FMath::RandRange(.0, PickupAngularForce.X), FMath::RandRange(.0, PickupAngularForce.Y), FMath::RandRange(.0, PickupAngularForce.Z)};
+		const FVector AngularImpulse = FVector(FMath::RandRange(.0,PickupAngularForce.X),FMath::RandRange(.0,PickupAngularForce.Y),FMath::RandRange(.0,PickupAngularForce.Z));
 		CurrentPickupStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
-		
-		// check for destroy
-		if (CurrentPickupComponent->GetPickupType() == EPickupType::DestroyOnThrow)
+
+		if(CurrentPickupComponent->GetPickupType() == EPickupType::DestroyOnThrow)
 			CurrentPickupComponent->StartDestructionTimer();
 	}
-	
-	// Resets Refs
+
+	bIsThrowHeld=false;
+	TimeThrowHeld=0.f;
+
 	CurrentPickup = nullptr;
 	CurrentPickupComponent = nullptr;
 	CurrentPickupStaticMesh = nullptr;
+}
+
+void UGravityGunComponent::OnHoldPickupDestroy()
+{
+	ReleasePickup();
 }

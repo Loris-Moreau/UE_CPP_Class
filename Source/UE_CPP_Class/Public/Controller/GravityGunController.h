@@ -24,7 +24,6 @@ protected:
 
 	void onTakeObjectInputPressed();
 	void onThrowObjectInputTriggered(const struct FInputActionValue& Value);
-	void ThrowHoldCount();
 	void RaySizeChange();
 	
 // Inputs

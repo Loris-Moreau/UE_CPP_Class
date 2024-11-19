@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "PickupComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupDestroyDelegate);
+
 UENUM()
 enum class EPickupType : uint8
 {
@@ -23,16 +25,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Pickup")
 	EPickupType pickupType = EPickupType::Normal;
 	UPROPERTY(EditAnywhere, Category = "Pickup", meta = (EditCondition = "pickupType != EPickupType::Normal", EditConditionHides))
-	float destructionTimer = 5.f;
+	float destructionTimer = 3.f;
 };
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UE_CPP_CLASS_API UPickupComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	UPickupComponent();
+	void clearDestroyTimer();
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,4 +52,6 @@ protected:
 public:
 	void StartDestructionTimer();
 	EPickupType GetPickupType() const;
+
+	FOnPickupDestroyDelegate OnPickupDestroy;
 };

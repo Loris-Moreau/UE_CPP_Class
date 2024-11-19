@@ -8,7 +8,13 @@
 UPickupComponent::UPickupComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
 
+void UPickupComponent::clearDestroyTimer()
+{
+	// Clear Timer
+	FTimerManager& TimerManager = this->GetWorld()->GetTimerManager();
+	TimerManager.ClearTimer(PickupDestructionTimerHandle);
 }
 
 void UPickupComponent::BeginPlay()
@@ -18,9 +24,7 @@ void UPickupComponent::BeginPlay()
 
 void UPickupComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// Clear Timer
-	FTimerManager& TimerManager = this->GetWorld()->GetTimerManager();
-	TimerManager.ClearTimer(PickupDestructionTimerHandle);
+	clearDestroyTimer();
 
 	// Need to call after because it cleans up
 	Super::EndPlay(EndPlayReason);
@@ -42,9 +46,7 @@ void UPickupComponent::StartDestructionTimer()
 
 void UPickupComponent::DestroyPickup()
 {
-	// Clear Timer
-	FTimerManager& TimerManager = this->GetWorld()->GetTimerManager();
-	TimerManager.ClearTimer(PickupDestructionTimerHandle);
+	OnPickupDestroy.Broadcast();
 	
 	GetOwner()->Destroy();
 }

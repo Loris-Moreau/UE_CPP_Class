@@ -22,9 +22,7 @@ public:
 	void onTakeObjectInputPressed();
 	void onThrowObjectInputPressed();
 	void onThrowObjectInputRelease();
-
-	void ThrowPowerCount();
-
+	
 	void RaySizeChange();
 
 	float throwTimeElapsed = 0.0;
@@ -63,12 +61,24 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup")
 	FVector PickupAngularForce = {450000.0, 250000.0, 500000.0};
 
+	bool bIsThrowHeld = false;
+	float TimeThrowHeld = 0.f;
+	UPROPERTY(EditDefaultsOnly,Category="GravityGun|PickUp",meta=(ClampMin="1000.0",ClampMax="10000.0"))
+	float MaxForce = 5000.f;
+	UPROPERTY(EditDefaultsOnly,Category="GravityGun|PickUp",meta=(ClampMin=".3",ClampMax="20.0"))
+	float TimeToReachMaxForce = 3.f;
+	bool bUseForceMultiplier = false;
+	UPROPERTY(EditDefaultsOnly,Category="GravityGun|PickUp",meta=(ClampMin=".5",ClampMax="5.0"))
+	float ForceMultipler = 3.f;
+	
 	void UpdatePickupLocation();
 	void ReleasePickup(bool throwPickup = false);
+
+	void OnHoldPickupDestroy();
 	
 	// Debug
 	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug")
 	bool DrawDebugRaycast = false;
-	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug", meta = (EditCondition = "DrawDebugRaycast", EditConditionHides,ClampMin = "0.1", ClampMax = "5.0"))
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Debug", meta = (EditCondition = "DrawDebugRaycast", EditConditionHides,ClampMin = "0.1", ClampMax = "5.0"))
 	float TimerDebugRaycast = 0.5f;
 };
