@@ -11,7 +11,6 @@
 UGravityGunComponent::UGravityGunComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 void UGravityGunComponent::BeginPlay()
@@ -60,6 +59,8 @@ void UGravityGunComponent::onTakeObjectInputPressed()
 
 	// Gets it's pointer
 	CurrentPickup = HitResult.GetActor();
+	if (CurrentPickup.IsValid())
+		return;
 	
 	FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
 	UE_LOG(LogTemp, Log, TEXT("Hit : %s"), *ActorName);
@@ -74,5 +75,28 @@ void UGravityGunComponent::onThrowObjectInputPressed()
 void UGravityGunComponent::onThrowObjectInputRelease()
 {
 	UE_LOG(LogTemp, Log, TEXT("Throw Release"));
+}
+
+void UGravityGunComponent::RaySizeChange()
+{
+	if (raySize >= raySizeMax)
+	{
+		goingUp = false;
+	}
+	if (raySize <= raySizeMin)
+	{
+		goingUp = true;
+	}
+	
+	if (goingUp == true)
+	{
+		raySize += 10.0;
+	}
+	else if (goingUp == false)
+	{
+		raySize -= 10.0;
+	}
+	
+	UE_LOG(LogTemp, Log, TEXT("ray size : %f"), raySize);
 }
 

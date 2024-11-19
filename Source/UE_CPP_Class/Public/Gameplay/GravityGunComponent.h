@@ -23,7 +23,9 @@ public:
 	void onThrowObjectInputPressed();
 	void onThrowObjectInputRelease();
 
+	void RaySizeChange();
 
+	
 protected:
 	TWeakObjectPtr<class AMain_Player> Character = nullptr;
 	TWeakObjectPtr<class APlayerCameraManager> PlayerCameraManager = nullptr;
@@ -33,9 +35,12 @@ protected:
 	TEnumAsByte<ETraceTypeQuery> GravityGunCollisionTraceChannel;
 	ECollisionChannel GravityGunCollisionChannel;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision", meta = (ClampMin = "100.0",ClampMax = "1000.0"))
+	//UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision", meta = (ClampMin = "100.0",ClampMax = "1000.0"))
 	float raySize = 500.0; // 500 = 5 Meters
-
+	float raySizeMax = 1000.0;
+	float raySizeMin = 100.0;
+	bool goingUp = true;
+	
 	// PickUp
 	TWeakObjectPtr<AActor> CurrentPickup = nullptr;
 	TWeakObjectPtr<class UPickupComponent> CurrentPickupComponent = nullptr;

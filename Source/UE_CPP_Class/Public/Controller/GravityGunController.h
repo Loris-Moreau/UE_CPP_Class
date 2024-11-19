@@ -24,10 +24,13 @@ protected:
 
 	void onTakeObjectInputPressed();
 	void onThrowObjectInputTriggered(const struct FInputActionValue& Value);
+	void RaySizeChange();
 	
 // Inputs
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
 	class UInputAction* InputActionTake;
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
 	class UInputAction* InputActionThrow;		
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
+	class UInputAction* InputActionRayGrow;		
 };
