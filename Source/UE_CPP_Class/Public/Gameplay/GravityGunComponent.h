@@ -37,13 +37,29 @@ protected:
 	
 	//UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision", meta = (ClampMin = "100.0",ClampMax = "1000.0"))
 	float raySize = 500.0; // 500 = 5 Meters
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision")
 	float raySizeMax = 1000.0;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision")
 	float raySizeMin = 100.0;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Collision")
+	float raySizeUpdate = 25.0;
 	bool goingUp = true;
 	
 	// PickUp
 	TWeakObjectPtr<AActor> CurrentPickup = nullptr;
 	TWeakObjectPtr<class UPickupComponent> CurrentPickupComponent = nullptr;
+	TWeakObjectPtr<class UStaticMeshComponent> CurrentPickupStaticMesh = nullptr;
+	FName previousCollisionProfileName = NAME_None;
+	
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "100.0", ClampMax = "1000.0"))
+	float pickupDisanceFromPlayer = 200.0;
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "-200.0", ClampMax = "1000.0"))
+	float pickupHeightFromPlayer = -15.0;
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun|Pickup", meta = (ClampMin = "50.0", ClampMax = "1000.0"))
+	float PickupThrowForce = 7000.0;
+	
+	void UpdatePickupLocation();
+	void ReleasePickup(bool throwPickup = false);
 	
 	// Debug
 	UPROPERTY(EditAnywhere, Category="Gravity Gun|Debug")
