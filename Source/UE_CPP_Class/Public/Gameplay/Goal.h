@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Controller/MainPlayerController.h"
 #include "GameFramework/Actor.h"
 #include "Goal.generated.h"
 
@@ -41,9 +42,13 @@ public:
 	// Exercice 3
 public:
 	FSendScoreDelegate OnSendScore;
-
-public:
+	
 	void DisplayScore() const;
 
 	// End of Exercice 3
+
+	//Ex 4
+
+	
+	//End of Ex 4
 };

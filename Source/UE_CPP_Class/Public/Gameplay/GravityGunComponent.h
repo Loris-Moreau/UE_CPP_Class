@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GravityGunComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNumPickupDelegate, int, pickupTaken);
 
 UCLASS(Abstract, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_CPP_CLASS_API UGravityGunComponent : public UActorComponent
@@ -28,8 +29,7 @@ public:
 protected:
 	TWeakObjectPtr<class AMain_Player> Character = nullptr;
 	TWeakObjectPtr<class APlayerCameraManager> CameraManager = nullptr;
-
-
+	
 // Collision
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GravityGun|Collision")
@@ -40,8 +40,7 @@ protected:
 	float RaycastSize = 500.f;
 
 // End of Collision
-
-
+	
 // Pick Up
 protected:
 	TWeakObjectPtr<AActor> CurrentPickUp = nullptr;
@@ -68,7 +67,7 @@ protected:
 // End of Pick Up
 
 
-// Exercice 1
+// Ex 1
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GravityGun|Collision|Exercice 1", meta = (ClampMin = "100.0", ClampMax = "1000.0"))
 	float RaycastSizeMin = 100.f;
@@ -82,10 +81,10 @@ public:
 	void OnIncreaseRaycastSize();
 	void OnDecreaseRaycastSize();
 
-// End of Exercice 1
+// End of Ex 1
 
 
-// Exercice 2
+// Ex 2
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GravityGun|Pick Up", meta = (ClampMin = "100.0", ClampMax = "10000.0"))
 	float PickUpMaxThrowForce = 10000.f;
@@ -105,8 +104,13 @@ protected:
 public:
 	void OnThrowForceMultiplierInputPressed();
 	
-// End of Exercice 2
+// End of Ex 2
 
+	// event
+	int PickupTaken = 0;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FNumPickupDelegate onPickupTaken;
+	// end of event
 
 // Debug
 protected:

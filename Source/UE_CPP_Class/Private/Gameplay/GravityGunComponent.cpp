@@ -75,12 +75,7 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 
 	// Get its pointer
 	CurrentPickUp = HitResult.GetActor();
-
-	// Print Name
-	FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
-	FString UnrealActorName = HitResult.GetActor()->GetName();
-	UE_LOG(LogTemp, Log, TEXT("I HIT SOMETHING - MY NAME %s - UNREAL NAME %s"), *ActorName, *UnrealActorName);
-
+	
 	// Disable the physics
 	CurrentPickUpStaticMesh->SetSimulatePhysics(false);
 
@@ -100,13 +95,16 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 			break;
 
 		case EPickUpType::DestroyAfterThrow:
-			// Clear the timer so it doesn't dissapear in our hands
+			// Clear the timer, so it doesn't disappear in our hands
 			CurrentPickUpComponent->ClearDestructionTimer();
 			break;
 
 		default:
 			break;
 	}
+
+	PickupTaken++;
+	onPickupTaken.Broadcast(PickupTaken);
 }
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
@@ -162,7 +160,6 @@ void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
 	{
 		const float ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
 		const float ThrowForce = FMath::Lerp(PickUpThrowForce, PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
-		UE_LOG(LogTemp, Log, TEXT("MY THROW FORCE IS %f - THE TIMER WAS %f"), ThrowForce, CurrentTimeToReachMaxThrowForce);
 
 		const FVector Impusle = CameraManager->GetActorForwardVector() * ThrowForce;
 		CurrentPickUpStaticMesh->AddImpulse(Impusle);
@@ -210,5 +207,3 @@ void UGravityGunComponent::OnThrowForceMultiplierInputPressed()
 {
 	CurrentPickUpThrowForceMultiplier = CurrentPickUpThrowForceMultiplier == 1.f ? PickUpThrowForceMultiplier : 1.f;
 }
-
-

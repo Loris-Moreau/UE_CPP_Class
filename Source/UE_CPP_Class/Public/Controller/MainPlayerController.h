@@ -6,7 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "MainPlayerController.generated.h"
 
-
 UCLASS()
 class UE_CPP_CLASS_API AMainPlayerController : public APlayerController
 {
@@ -62,7 +61,6 @@ protected:
 
 	TArray<AActor*> GoalArray;
 
-protected:
 	UFUNCTION()
 	void OnSendScore(unsigned int Score, FString GoalName);
 

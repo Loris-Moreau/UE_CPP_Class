@@ -11,6 +11,7 @@
 
 #include "Player/Main_Player.h"
 #include "Controller/GravityGunController.h"
+#include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 
 #include "Kismet/GameplayStatics.h"
@@ -140,7 +141,7 @@ void AMainPlayerController::AddYawInput(float Value)
 
 void AMainPlayerController::OnSendScore(unsigned int Score, FString GoalName)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s has a score of %d"), *GoalName, Score);
+	UE_LOG(LogTemp, Log, TEXT("Timmy %s has a score of %d"), *GoalName, Score);
 }
 
 void AMainPlayerController::OnDisplayScoreInputPressed()
@@ -154,7 +155,7 @@ void AMainPlayerController::OnDisplayScoreInputPressed()
 
 			unsigned int PickUpInside = GoalCasted->CountPickUpInside();
 			FString GoalName = UKismetSystemLibrary::GetDisplayName(GoalCasted);
-			UE_LOG(LogTemp, Log, TEXT("%s has %d Pickups Inside"), *GoalName, PickUpInside);
+			UE_LOG(LogTemp, Log, TEXT("This %s has %d Pickups Inside"), *GoalName, PickUpInside);
 		}
 	}
 }
