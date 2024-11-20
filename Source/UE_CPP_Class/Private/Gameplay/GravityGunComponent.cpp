@@ -207,3 +207,13 @@ void UGravityGunComponent::OnThrowForceMultiplierInputPressed()
 {
 	CurrentPickUpThrowForceMultiplier = CurrentPickUpThrowForceMultiplier == 1.f ? PickUpThrowForceMultiplier : 1.f;
 }
+
+float UGravityGunComponent::GetTimeToReachMaxThrow()
+{
+	return TimeToReachMaxThrowForce;
+}
+
+float UGravityGunComponent::GetCurrentTimeToReachMaxThrow()
+{
+	return CurrentTimeToReachMaxThrowForce;
+}

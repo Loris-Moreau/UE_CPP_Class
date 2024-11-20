@@ -120,4 +120,13 @@ protected:
 	float TimerDebugRaycast = 5.f;
 
 // End of Debug
+
+	// UI
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Gravity Gun")
+	float GetTimeToReachMaxThrow();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Gravity Gun")
+	float GetCurrentTimeToReachMaxThrow();
+	
+	//end of UI
 };
