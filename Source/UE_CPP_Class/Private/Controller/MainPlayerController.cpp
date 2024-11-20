@@ -2,6 +2,7 @@
 
 #include "Controller/GravityGunController.h"
 #include "Engine/LocalPlayer.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Public/Player/Main_Player.h"
 #include "Public/Controller/GravityGunController.h"
 
@@ -99,10 +100,18 @@ void AMainPlayerController::AddYawInput(float Val)
 	Super::AddYawInput(multipliedValue);
 }
 
+void AMainPlayerController::Ondisplayscoreinputpressed()
+{
+	
+	//FString GoalName = UKismetSystemLibrary::GetDisplayName(GoalCasted);
+	//UE_LOG(LogTemp, Log, TEXT("Goal is %s Score is %s"), *GoalName, *pickupInside);
+}
+
 void AMainPlayerController::AddPitchInput(float Val)
 {
 	float multipliedValue = Val * mouseSensiY;
 	
 	Super::AddPitchInput(multipliedValue);
 }
+
 

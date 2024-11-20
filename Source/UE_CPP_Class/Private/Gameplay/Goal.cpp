@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Engine/World.h"
 #include "Gameplay/PickupComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -36,8 +37,25 @@ void AGoal::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	
 	score++;
 	
-	getScore();
+	FString GoalName = UKismetSystemLibrary::GetDisplayName(this);
+	//OnSendScore.Broadcast(score, GoalName);
+}
+
+unsigned int AGoal::CountPickupInside()
+{
+	if (!CollisionBox)
+		return 0;
 	
+	// Prepare Vars
+	const FVector GoalLoc = this->GetActorLocation();
+	const FVector GoalExtent = CollisionBox->GetScaledBoxExtent();
+	const FRotator GoalOrientation = GetActorRotation();
+	const TArray<AActor*> ActorsToIgnore;
+	TArray<FHitResult> HitResults;
+	
+	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), GoalLoc, GoalLoc, GoalExtent, GoalOrientation, GoalCollisionTraceChannel, false, ActorsToIgnore, EDrawDebugTrace::None,HitResults, true);
+
+	return HitResults.Num();
 }
 
 FString AGoal::getScore() const

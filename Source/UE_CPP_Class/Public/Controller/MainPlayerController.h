@@ -52,7 +52,8 @@ protected:
 	float mouseSensiX = 1.f;
 	UPROPERTY(EditDefaultsOnly,Category = "Sensitivity", meta=(ToolTip="Mouse Sensitivity for Y axis", ClampMin="0.1",ClampMax="3.0"))
 	float mouseSensiY = 1.f;
-	
+
+	void Ondisplayscoreinputpressed();
 public:
 	virtual void AddPitchInput(float Val) override;
 	virtual void AddYawInput(float Val) override;
