@@ -3,29 +3,15 @@
 
 #include "Player/Main_Player.h"
 
-#include "Engine/Engine.h"
-
+// Sets default values
 AMain_Player::AMain_Player()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	
+	PrimaryActorTick.bCanEverTick = false;
 }
 
+// Called when the game starts or when spawned
 void AMain_Player::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
-
-void AMain_Player::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-}
-
-void AMain_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-}
-

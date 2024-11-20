@@ -1,10 +1,35 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "Controller/MainPlayerController.h"
 
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputComponent.h"
+#include "InputAction.h"
+#include "InputActionValue.h"
+
+#include "Player/Main_Player.h"
 #include "Controller/GravityGunController.h"
-#include "Engine/LocalPlayer.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Public/Player/Main_Player.h"
-#include "Public/Controller/GravityGunController.h"
+#include "Engine/World.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "Gameplay/Goal.h"
+
+void AMainPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoal::StaticClass(), GoalArray);
+	for (AActor* Goal : GoalArray)
+	{
+		AGoal* GoalCasted = Cast<AGoal>(Goal);
+		if (GoalCasted)
+		{
+			GoalCasted->OnSendScore.AddUniqueDynamic(this, &AMainPlayerController::OnSendScore);
+		}
+	}
+}
 
 void AMainPlayerController::SetupInputComponent()
 {
@@ -12,58 +37,63 @@ void AMainPlayerController::SetupInputComponent()
 
 	// Bind to subsystem
 	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	
 	if (!EnhancedInputSubsystem)
 		return;
 
 	EnhancedInputSubsystem->ClearAllMappings();
 	EnhancedInputSubsystem->AddMappingContext(InputMapping, 0);
 
-	// Get Enhanced input comp
+	// Get Enhanced Input Comp
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
-	
 	if (!EnhancedInputComponent)
 		return;
-	
 	EnhancedInputComponent->ClearActionBindings();
 
-	// Bind Input Actions
+	// Bind Movements
 	EnhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this, &AMainPlayerController::MovePlayer);
 	EnhancedInputComponent->BindAction(InputActionLook, ETriggerEvent::Triggered, this, &AMainPlayerController::Look);
 	EnhancedInputComponent->BindAction(InputActionJump, ETriggerEvent::Triggered, this, &AMainPlayerController::Jump);
+
+	// Exercice 3
+	EnhancedInputComponent->BindAction(InputActionScore, ETriggerEvent::Triggered, this, &AMainPlayerController::OnDisplayScoreInputPressed);
 }
 
 void AMainPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
 
-	// To Bind Only Once
+	// We want to bind only once to the inputs
 	if (Character)
 		return;
-	
+
+	// Get a ref to our Character
 	Character = Cast<AMain_Player>(InPawn);
 	if (!Character)
 		return;
-	
+
 	GravityGunController = GetComponentByClass<UGravityGunController>();
-	if(GravityGunController.IsValid())
-		GravityGunController->SetupInputComponentGravityGunController(InputComponent, Character);
+	if (GravityGunController.IsValid())
+	{
+		GravityGunController->SetupInputComponentGravityGun(InputComponent, Character);
+	}
 }
 
 void AMainPlayerController::MovePlayer(const FInputActionValue& Value)
 {
-	if(!Character)
+	if (!Character)
 		return;
-	
+
+	// Get movement value
 	const FVector2D MoveValue = Value.Get<FVector2D>();
 
-	// Check if Player Move Forward
-	if(MoveValue.Y != 0.f )
+	// Check if the player wants to move in the forward direction
+	if (MoveValue.Y != 0.f)
 	{
 		Character->AddMovementInput(Character->GetActorForwardVector(), MoveValue.Y);
 	}
-	// Check Right
-	if(MoveValue.X != 0.f )
+
+	// Check if the player wants to move in the right direction
+	if (MoveValue.X != 0.f)
 	{
 		Character->AddMovementInput(Character->GetActorRightVector(), MoveValue.X);
 	}
@@ -71,47 +101,60 @@ void AMainPlayerController::MovePlayer(const FInputActionValue& Value)
 
 void AMainPlayerController::Look(const FInputActionValue& Value)
 {
-	if(!Character)
+	if (!Character)
 		return;
-	
-	const FVector2D LookValue = Value.Get<FVector2D>();
-	
-	if(LookValue.X != 0.f)
+
+	// Get movement value
+	const FVector2D MoveValue = Value.Get<FVector2D>();
+
+	if (MoveValue.X != 0.f)
 	{
-		// Yaw
-		Character->AddControllerYawInput(LookValue.X);
+		Character->AddControllerYawInput(MoveValue.X);
 	}
-	if(LookValue.Y != 0.f)
+
+	if (MoveValue.Y != 0.f)
 	{
-		// Pitch
-		Character->AddControllerPitchInput(LookValue.Y);
+		Character->AddControllerPitchInput(MoveValue.Y);
 	}
 }
 
 void AMainPlayerController::Jump()
 {
+	if (!Character)
+		return;
+
 	Character->Jump();
 }
 
-void AMainPlayerController::AddYawInput(float Val)
+void AMainPlayerController::AddPitchInput(float Value)
 {
-	float multipliedValue = Val * mouseSensiX;
-	
-	Super::AddYawInput(multipliedValue);
+	float MultipliedValue = Value * MouseSensitivityY;
+	Super::AddPitchInput(MultipliedValue);
 }
 
-void AMainPlayerController::Ondisplayscoreinputpressed()
+void AMainPlayerController::AddYawInput(float Value)
 {
-	
-	//FString GoalName = UKismetSystemLibrary::GetDisplayName(GoalCasted);
-	//UE_LOG(LogTemp, Log, TEXT("Goal is %s Score is %s"), *GoalName, *pickupInside);
+	float MultipliedValue = Value * MouseSensitivityX;
+	Super::AddYawInput(MultipliedValue);
 }
 
-void AMainPlayerController::AddPitchInput(float Val)
+void AMainPlayerController::OnSendScore(unsigned int Score, FString GoalName)
 {
-	float multipliedValue = Val * mouseSensiY;
-	
-	Super::AddPitchInput(multipliedValue);
+	UE_LOG(LogTemp, Log, TEXT("%s has a score of %d"), *GoalName, Score);
 }
 
+void AMainPlayerController::OnDisplayScoreInputPressed()
+{
+	for (AActor* Goal : GoalArray)
+	{
+		AGoal* GoalCasted = Cast<AGoal>(Goal);
+		if (GoalCasted)
+		{
+			GoalCasted->DisplayScore();
 
+			unsigned int PickUpInside = GoalCasted->CountPickUpInside();
+			FString GoalName = UKismetSystemLibrary::GetDisplayName(GoalCasted);
+			UE_LOG(LogTemp, Log, TEXT("%s has %d Pickups Inside"), *GoalName, PickUpInside);
+		}
+	}
+}

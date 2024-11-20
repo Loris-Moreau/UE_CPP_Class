@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Gameplay/Goal.h"
 #include "Main_Player.generated.h"
 
 UCLASS()
@@ -15,11 +14,4 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
-public:	
-	virtual void Tick(float DeltaTime) override;
-	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	
 };

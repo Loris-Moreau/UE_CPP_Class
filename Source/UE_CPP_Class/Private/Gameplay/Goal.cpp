@@ -1,11 +1,13 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "Gameplay/Goal.h"
-
-#include <string>
-
+#include "Components/BoxComponent.h"
 #include "Engine/World.h"
-#include "Gameplay/PickupComponent.h"
+#include "Gameplay/PickUpComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+// Sets default values
 AGoal::AGoal(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -17,54 +19,55 @@ AGoal::AGoal(const FObjectInitializer& ObjectInitializer)
 	}
 }
 
+// Called when the game starts or when spawned
 void AGoal::BeginPlay()
 {
 	Super::BeginPlay();
-	// Bind to overlap
+
+	// Bind to the overlap event
 	if (CollisionBox)
 	{
 		CollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &AGoal::OnOverlapBegin);
 	}
+	else 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Goal Collision Box Missing"));
+	}
 }
 
-void AGoal::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AGoal::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UPickupComponent* enteringPickup = OtherActor->FindComponentByClass<UPickupComponent>();
-	
-	if (!enteringPickup)
+	UPickUpComponent* EnteringPickUp = OtherActor->FindComponentByClass<UPickUpComponent>();
+	if (!EnteringPickUp)
 		return;
 	
-	score++;
+	Score++;
 	
 	FString GoalName = UKismetSystemLibrary::GetDisplayName(this);
-	//OnSendScore.Broadcast(score, GoalName);
+	OnSendScore.Broadcast(Score, GoalName);
 }
 
-unsigned int AGoal::CountPickupInside()
+unsigned int AGoal::CountPickUpInside()
 {
+	// Check collision box
 	if (!CollisionBox)
 		return 0;
-	
-	// Prepare Vars
-	const FVector GoalLoc = this->GetActorLocation();
-	const FVector GoalExtent = CollisionBox->GetScaledBoxExtent();
+
+	// Prepare variables
+	const FVector GoalLocation = GetActorLocation();
+	const FVector BoxSize = CollisionBox->GetScaledBoxExtent();
 	const FRotator GoalOrientation = GetActorRotation();
 	const TArray<AActor*> ActorsToIgnore;
 	TArray<FHitResult> HitResults;
 	
-	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), GoalLoc, GoalLoc, GoalExtent, GoalOrientation, GoalCollisionTraceChannel, false, ActorsToIgnore, EDrawDebugTrace::None,HitResults, true);
-
+	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), GoalLocation, GoalLocation, BoxSize, GoalOrientation, 
+		GoalCollisionTraceChannel,false, ActorsToIgnore, EDrawDebugTrace::None, HitResults, true);
+	
 	return HitResults.Num();
 }
 
-FString AGoal::getScore() const
+void AGoal::DisplayScore() const
 {
 	FString GoalName = UKismetSystemLibrary::GetDisplayName(this);
- 	
- 	FString scoreString = FString::FromInt(score);
-	
-	UE_LOG(LogTemp, Log, TEXT("Goal is %s Score is %s"), *GoalName, *scoreString);
-	
- 	return scoreString;
+	UE_LOG(LogTemp, Log, TEXT("%s has a score of %d"), *GoalName, Score);
 }

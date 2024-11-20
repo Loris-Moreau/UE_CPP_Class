@@ -4,54 +4,62 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "PickupComponent.generated.h"
+#include "PickUpComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupDestroyDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickUpDestroyedDelegate);
 
 UENUM()
-enum class EPickupType : uint8
+enum class EPickUpType : uint8
 {
 	Normal,
-	DestroyOnPickup,
-	DestroyOnThrow,
-	MAX UMETA(Hidden)
+	DestroyAfterPickUp,
+	DestroyAfterThrow,
+	MAX UMETA(Hidden),
 };
 
 USTRUCT(BlueprintType)
-struct FPickupStruct
+struct FPickUpStruct
 {
 	GENERATED_BODY()
+
 public:
-	UPROPERTY(EditAnywhere, Category = "Pickup")
-	EPickupType pickupType = EPickupType::Normal;
-	UPROPERTY(EditAnywhere, Category = "Pickup", meta = (EditCondition = "pickupType != EPickupType::Normal", EditConditionHides))
-	float destructionTimer = 3.f;
+	UPROPERTY(EditAnywhere, Category = "PickUp")
+	EPickUpType PickUpType = EPickUpType::Normal;
+	UPROPERTY(EditAnywhere, Category = "PickUp", meta = (EditCondition = "PickUpType != EPickUpType::Normal", EditConditionHides))
+	float DestructionTimer = 5.f;
 };
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class UE_CPP_CLASS_API UPickupComponent : public UActorComponent
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class UE_CPP_CLASS_API UPickUpComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UPickupComponent();
-	void clearDestroyTimer();
+	UPickUpComponent();
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(EditAnywhere, Category = "Pickup")
-	FPickupStruct PickupStruct;
+protected:
+	UPROPERTY(EditAnywhere, Category = "PickUp")
+	FPickUpStruct PickUpStruct;
 
-	// Destroy
-	FTimerHandle PickupDestructionTimerHandle;
-	
-	void DestroyPickup();
+
+	// Destruction
+protected:
+	FTimerHandle PickUpDestructionTimerHandle;
 
 public:
-	void StartDestructionTimer();
-	EPickupType GetPickupType() const;
+	FOnPickUpDestroyedDelegate OnPickUpDestroyed;
 
-	FOnPickupDestroyDelegate OnPickupDestroy;
+protected:
+	void DestroyPickUp();
+
+public:
+	void ClearDestructionTimer();
+	void StartPickUpDestructionTimer();
+	EPickUpType GetPickUpType() const;
+
+	// End of Destruction
 };

@@ -1,197 +1,214 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "Gameplay/GravityGunComponent.h"
-
-#include <cmath>
-
-#include "DrawDebugHelpers.h"
-#include "Engine/World.h"
-#include "Public/Player/Main_Player.h"
+#include "Player/Main_Player.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Gameplay/PickupComponent.h"
+#include "Gameplay/PickUpComponent.h"
+
 #include "Components/StaticMeshComponent.h"
-#include "Engine/StaticMesh.h"
+#include "Engine/World.h"
 
 UGravityGunComponent::UGravityGunComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+
 void UGravityGunComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	Character = Cast<AMain_Player>(GetOwner());
-	PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-
+	CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 	GravityGunCollisionChannel = UEngineTypes::ConvertToCollisionChannel(GravityGunCollisionTraceChannel);
 }
+
 
 void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UpdatePickupLocation();
-	
-	if(bIsThrowHeld)TimeThrowHeld += DeltaTime;
+	UpdatePickUpLocation();
+	UpdateThrowForceTimer(DeltaTime);
 }
 
-void UGravityGunComponent::onTakeObjectInputPressed()
+void UGravityGunComponent::OnTakeObjectInputPressed()
 {
-	// make sure to only have one pickup in hand
-	if (CurrentPickup.IsValid())
+	// Make sure that we don't already have a pick up in our hands
+	if (CurrentPickUp.IsValid())
 	{
-		ReleasePickup();
+		ReleasePickUp();
 		return;
 	}
-	
-	// First - Launch RayCast
-	FVector RaycastStart = PlayerCameraManager->GetCameraLocation();
-	FVector RaycastEnd = RaycastStart + PlayerCameraManager->GetActorForwardVector() * raySize;
 
-	// Second - Prepare Param
+	// First - Launch a raycast to find a pick up
+	const FVector RaycastStart = CameraManager->GetCameraLocation();
+	const FVector RaycastEnd = RaycastStart + (CameraManager->GetActorForwardVector() * RaycastSize);
+
+	// Second - Prepare raycast params
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Character.Get());
 
+	// Third - Launch the raycast
 #if !UE_BUILD_SHIPPING
-	if (DrawDebugRaycast)
-	{
-		DrawDebugLine(GetWorld(), RaycastStart, RaycastEnd, FColor::Red, false, TimerDebugRaycast, 0, 0.5);
-	}
+	if(bDrawDebugRaycast)
+		DrawDebugLine(GetWorld(), RaycastStart, RaycastEnd, FColor::Red, false, TimerDebugRaycast, 0, 3.5f);
 #endif
-	
-	// Third - Launch Raycast
-	const bool bHit =	GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
-	if(!bHit)
+
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
+	if (!bHit)
 		return;
 	
-	// Check for pickup component 
-	CurrentPickupComponent = HitResult.GetActor()->GetComponentByClass<UPickupComponent>();
-	if (!CurrentPickupComponent.IsValid())
+
+	// Check for Pick Up Component
+	CurrentPickUpComponent = HitResult.GetActor()->GetComponentByClass<UPickUpComponent>();
+	if (!CurrentPickUpComponent.IsValid())
 		return;
 
-	// Check for mesh component
-	CurrentPickupStaticMesh = HitResult.GetActor()->GetComponentByClass<UStaticMeshComponent>();
-	if (!CurrentPickupStaticMesh.IsValid())
+	// Check for Mesh component
+	CurrentPickUpStaticMesh = HitResult.GetActor()->GetComponentByClass<UStaticMeshComponent>();
+	if (!CurrentPickUpStaticMesh.IsValid())
 		return;
-	
-	// Gets it's pointer
-	CurrentPickup = HitResult.GetActor();
-	if (CurrentPickup.IsValid())
-		return;
-	
-	//FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
-	//UE_LOG(LogTemp, Log, TEXT("Hit : %s"), *ActorName);
 
-	// Update collision profile & physics
-	previousCollisionProfileName = CurrentPickupStaticMesh->GetCollisionProfileName();
-	CurrentPickupStaticMesh->SetSimulatePhysics(false);
-	CurrentPickupStaticMesh->SetEnableGravity(false);
-	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+	// Get its pointer
+	CurrentPickUp = HitResult.GetActor();
 
-	// Check Destroy
-	switch (CurrentPickupComponent->GetPickupType())
+	// Print Name
+	FString ActorName = UKismetSystemLibrary::GetDisplayName(HitResult.GetActor());
+	FString UnrealActorName = HitResult.GetActor()->GetName();
+	UE_LOG(LogTemp, Log, TEXT("I HIT SOMETHING - MY NAME %s - UNREAL NAME %s"), *ActorName, *UnrealActorName);
+
+	// Disable the physics
+	CurrentPickUpStaticMesh->SetSimulatePhysics(false);
+
+	// Update the collision profile
+	PreviousCollisionProfileName = CurrentPickUpStaticMesh->GetCollisionProfileName();
+	CurrentPickUpStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+
+	// Check if destruction is required
+	switch (CurrentPickUpComponent->GetPickUpType())
 	{
-	case EPickupType::DestroyOnPickup:
-		// Launch Timer
-		CurrentPickupComponent->StartDestructionTimer();
-		
-		// Bind callback to event
-		CurrentPickupComponent->OnPickupDestroy.AddUniqueDynamic(this, &UGravityGunComponent::OnHoldPickupDestroy);
-		break;
-		
-	case EPickupType::DestroyOnThrow:
-		CurrentPickupComponent->clearDestroyTimer();
-		break;
-		
-	default:
-		break;
+		case EPickUpType::DestroyAfterPickUp:
+			// Launch the timer
+			CurrentPickUpComponent->StartPickUpDestructionTimer();
+
+			// Bind our callback on the event
+			CurrentPickUpComponent->OnPickUpDestroyed.AddUniqueDynamic(this, &UGravityGunComponent::OnHoldPickUpDestroyed);
+			break;
+
+		case EPickUpType::DestroyAfterThrow:
+			// Clear the timer so it doesn't dissapear in our hands
+			CurrentPickUpComponent->ClearDestructionTimer();
+			break;
+
+		default:
+			break;
 	}
 }
 
-void UGravityGunComponent::onThrowObjectInputPressed()
+void UGravityGunComponent::OnThrowObjectInputPressed()
 {
-	if (!CurrentPickup.IsValid())
- 		return;
-
-	bIsThrowHeld = true;
-}
-
-void UGravityGunComponent::onThrowObjectInputRelease()
-{
-	if (!CurrentPickup.IsValid())
-		return;
-	
-	ReleasePickup(true);
-}
-
-void UGravityGunComponent::RaySizeChange()
-{
-	if (raySize >= raySizeMax)
-	{
-		goingUp = false;
-	}
-	if (raySize <= raySizeMin)
-	{
-		goingUp = true;
-	}
-	
-	if (goingUp == true)
-	{
-		raySize += raySizeUpdate;
-	}
-	else if (goingUp == false)
-	{
-		raySize -= raySizeUpdate;
-	}
-	
-	//UE_LOG(LogTemp, Log, TEXT("ray size : %f"), raySize);
-}
-
-void UGravityGunComponent::UpdatePickupLocation()
-{
-	if (!CurrentPickup.IsValid())
+	if (!CurrentPickUp.IsValid())
 		return;
 
-	const FVector NewPickupLocation = PlayerCameraManager->GetCameraLocation() + (PlayerCameraManager->GetActorForwardVector() * pickupDisanceFromPlayer) + PlayerCameraManager->GetActorUpVector() * pickupHeightFromPlayer;
-	const FRotator NewPickupRotation = PlayerCameraManager->GetCameraRotation();
-
-	CurrentPickup->SetActorLocationAndRotation(NewPickupLocation, NewPickupRotation);
+	// Exercice 2 - Prepare throw force timer
+	CurrentTimeToReachMaxThrowForce = 0.f;
+	bUpdateThrowForceTimer = true;
 }
 
-void UGravityGunComponent::ReleasePickup(bool bPickupThrow)
+void UGravityGunComponent::OnThrowObjectInputReleased()
 {
-	if (CurrentPickupComponent->GetPickupType() == EPickupType::DestroyOnPickup)
-		CurrentPickupComponent->OnPickupDestroy.RemoveDynamic(this, &UGravityGunComponent::OnHoldPickupDestroy);
-	
-	if(!CurrentPickupStaticMesh.IsValid())
+	if (!CurrentPickUp.IsValid())
 		return;
-	
-	CurrentPickupStaticMesh->SetCollisionProfileName(previousCollisionProfileName);
-	CurrentPickupStaticMesh->SetSimulatePhysics(true);
 
-	if(bPickupThrow)
+	ReleasePickUp(true);
+
+	// Exercice 2 - Reset throw force timer
+	bUpdateThrowForceTimer = false;
+	CurrentTimeToReachMaxThrowForce = 0.f;
+}
+
+void UGravityGunComponent::UpdatePickUpLocation()
+{
+	// Make sure we have something to update
+	if (!CurrentPickUp.IsValid())
+		return;
+
+	// Compute its new location
+	const FVector NewPickUpLocation = CameraManager->GetCameraLocation() + (CameraManager->GetActorForwardVector() * PickUpDistanceFromPlayer) + (CameraManager->GetActorUpVector() * PickUpHeightFromPlayer);
+	const FRotator NewPickUpRotation = CameraManager->GetCameraRotation();
+	CurrentPickUp->SetActorLocationAndRotation(NewPickUpLocation, NewPickUpRotation);
+}
+
+void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
+{
+	// Unbind event if necessary
+	if (CurrentPickUpComponent->GetPickUpType() == EPickUpType::DestroyAfterPickUp)
 	{
-		float Force = FMath::GetMappedRangeValueClamped(FVector2d(0.f,TimeToReachMaxForce),FVector2d(1.f,MaxForce),TimeThrowHeld);
-		const FVector Impulse =PlayerCameraManager->GetActorForwardVector() * Force;
-		CurrentPickupStaticMesh->AddImpulse(Impulse);
-		
-		const FVector AngularImpulse = FVector(FMath::RandRange(.0,PickupAngularForce.X),FMath::RandRange(.0,PickupAngularForce.Y),FMath::RandRange(.0,PickupAngularForce.Z));
-		CurrentPickupStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
-
-		if(CurrentPickupComponent->GetPickupType() == EPickupType::DestroyOnThrow)
-			CurrentPickupComponent->StartDestructionTimer();
+		CurrentPickUpComponent->OnPickUpDestroyed.RemoveDynamic(this, &UGravityGunComponent::OnHoldPickUpDestroyed);
 	}
 
-	bIsThrowHeld=false;
-	TimeThrowHeld=0.f;
+	// Set back the physic
+	CurrentPickUpStaticMesh->SetSimulatePhysics(true);
 
-	CurrentPickup = nullptr;
-	CurrentPickupComponent = nullptr;
-	CurrentPickupStaticMesh = nullptr;
+	// Set back the coll profile
+	CurrentPickUpStaticMesh->SetCollisionProfileName(PreviousCollisionProfileName);
+
+	// Throw Pick Up
+	if (bThrowPickUp)
+	{
+		const float ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
+		const float ThrowForce = FMath::Lerp(PickUpThrowForce, PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
+		UE_LOG(LogTemp, Log, TEXT("MY THROW FORCE IS %f - THE TIMER WAS %f"), ThrowForce, CurrentTimeToReachMaxThrowForce);
+
+		const FVector Impusle = CameraManager->GetActorForwardVector() * ThrowForce;
+		CurrentPickUpStaticMesh->AddImpulse(Impusle);
+
+		const FVector AngularImpulse = FVector(FMath::RandRange(.0, PickUpAngularForce.X), FMath::RandRange(.0, PickUpAngularForce.Y), FMath::RandRange(.0, PickUpAngularForce.Z));
+		CurrentPickUpStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
+	
+		// Check if destruction is required
+		if (CurrentPickUpComponent->GetPickUpType() == EPickUpType::DestroyAfterThrow)
+			CurrentPickUpComponent->StartPickUpDestructionTimer();
+	}
+
+	// Clean pointers
+	CurrentPickUp = nullptr;
+	CurrentPickUpComponent = nullptr;
+	CurrentPickUpStaticMesh = nullptr;
 }
 
-void UGravityGunComponent::OnHoldPickupDestroy()
+void UGravityGunComponent::OnHoldPickUpDestroyed()
 {
-	ReleasePickup();
+	ReleasePickUp();
 }
+
+void UGravityGunComponent::OnIncreaseRaycastSize()
+{
+	RaycastSize = FMath::Clamp(RaycastSize + RaycastSizeUpdate, RaycastSizeMin, RaycastSizeMax);
+	UE_LOG(LogTemp, Log, TEXT("New Racast Size is %f"), RaycastSize);
+}
+
+void UGravityGunComponent::OnDecreaseRaycastSize()
+{
+	RaycastSize = FMath::Clamp(RaycastSize - RaycastSizeUpdate, RaycastSizeMin, RaycastSizeMax);
+	UE_LOG(LogTemp, Log, TEXT("New Racast Size is %f"), RaycastSize);
+}
+
+void UGravityGunComponent::UpdateThrowForceTimer(float DeltaTime)
+{
+	if (!bUpdateThrowForceTimer)
+		return;
+
+	CurrentTimeToReachMaxThrowForce += DeltaTime;
+}
+
+void UGravityGunComponent::OnThrowForceMultiplierInputPressed()
+{
+	CurrentPickUpThrowForceMultiplier = CurrentPickUpThrowForceMultiplier == 1.f ? PickUpThrowForceMultiplier : 1.f;
+}
+
+

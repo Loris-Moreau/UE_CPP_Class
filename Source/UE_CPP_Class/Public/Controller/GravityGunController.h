@@ -1,3 +1,5 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,30 +11,52 @@ UCLASS(Abstract, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableCom
 class UE_CPP_CLASS_API UGravityGunController : public UActorComponent
 {
 	GENERATED_BODY()
-	
-protected:
-	TWeakObjectPtr<class AMain_Player> Character = nullptr;
-	TWeakObjectPtr<class UGravityGunComponent> GravityGunComponent = nullptr;
-	
+
 public:	
 	UGravityGunController();
 
-	void SetupInputComponentGravityGunController(TObjectPtr<class UInputComponent> InputComponent, class AMain_Player* InCharacter);
-	
 protected:
 	virtual void BeginPlay() override;
+		
+protected:
+	TWeakObjectPtr<class AMain_Player> Character = nullptr;
+	TWeakObjectPtr<class UGravityGunComponent> GravityGunComponent = nullptr;
 
-	void onTakeObjectInputPressed();
-	void onThrowObjectInputTriggered(const struct FInputActionValue& Value);
-	void RaySizeChange();
-	
-// Inputs
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
-	class UInputAction* InputActionTake;
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
-	class UInputAction* InputActionThrow;		
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
-	class UInputAction* InputActionRayGrow;		
-	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Input Action")
-	class UInputAction* ThrowMulti;	
+	// Inputs
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
+	class UInputAction* InputActionTakeObject;
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
+	class UInputAction* InputActionThrowObject;
+
+public:
+	void SetupInputComponentGravityGun(TObjectPtr<class UInputComponent> InputComponent, class AMain_Player* InCharacter);
+
+protected:
+	void OnTakeObjectInputPressed();
+	void OnThrowObjectInputTriggered(const struct FInputActionValue& Value);
+
+	// End of Inputs
+
+
+	// Exercice 1
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Exercice 1")
+	class UInputAction* InputActionRaycastSize;
+
+protected:
+	void OnUpdateRaycastSizeInputTriggered(const struct FInputActionValue& Value);
+
+	// End of Exercice 1
+
+
+	// Exercice 2
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Exercice 1")
+	class UInputAction* InputActionThrowForceMultiplier;
+
+protected:
+	void OnThrowForceMultiplierInputPressed();
+
+	// End of Exercice 2
 };
