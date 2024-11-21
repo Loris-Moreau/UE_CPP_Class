@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/Actor.h"
 #include "GravityGunComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNumPickupDelegate, int, pickupTaken);
@@ -29,6 +30,8 @@ public:
 protected:
 	TWeakObjectPtr<class AMain_Player> Character = nullptr;
 	TWeakObjectPtr<class APlayerCameraManager> CameraManager = nullptr;
+	
+	TWeakObjectPtr<class UPickupSpawnerComponent> pickupSpawnerComponent = nullptr;
 	
 // Collision
 protected:
@@ -129,4 +132,6 @@ public:
 	float GetCurrentTimeToReachMaxThrow();
 	
 	//end of UI
+
+	void DestroyPickup(AActor* actor = nullptr);
 };

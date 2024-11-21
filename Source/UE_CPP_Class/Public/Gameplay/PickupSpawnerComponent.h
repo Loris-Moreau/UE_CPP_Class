@@ -40,8 +40,17 @@ public:
 	// 1 = normal, 2 = throw Destroy, 3 = Take Destroy
 	void spawnPickup(int type, FVector pos);
 
-	UPROPERTY(EditDefaultsOnly, Category="Parameters", meta=(ClampMin=1,ClampMax=10000))
-	int maxSpawnAmount = 50;
+	UPROPERTY(EditDefaultsOnly, Category="Parameters|Spawning", meta=(ClampMin = "1", ClampMax = "10000"))
+	int maxSpawnAmount = 500;
 
-	void destroyPickup();
+	void destroyPickup(AActor* pickup);
+
+	// Cooldown Timer
+	UPROPERTY(EditDefaultsOnly, Category = "Parameters|Cooldown", meta = (ClampMin = "0.05", ClampMax = "10.0"))
+	float CooldownTime = 2.f;
+	float CurrentCooldownTime = 0.f;
+	
+	bool bUpdateCooldownTimer = false;
+	
+	void UpdateCooldownTimer(float delta);
 };

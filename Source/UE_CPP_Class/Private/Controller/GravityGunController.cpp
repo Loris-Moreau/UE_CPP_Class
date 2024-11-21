@@ -43,6 +43,9 @@ void UGravityGunController::SetupInputComponentGravityGun(TObjectPtr<class UInpu
 
 	// Exercice 2
 	EnhancedInputComponent->BindAction(InputActionThrowForceMultiplier, ETriggerEvent::Triggered, this, &UGravityGunController::OnThrowForceMultiplierInputPressed);
+
+	
+	EnhancedInputComponent->BindAction(InputActionDestroyPickup, ETriggerEvent::Triggered, this, &UGravityGunController::DestroyPickup);
 }
 
 void UGravityGunController::OnTakeObjectInputPressed()
@@ -91,4 +94,9 @@ void UGravityGunController::OnThrowForceMultiplierInputPressed()
 		return;
 
 	GravityGunComponent->OnThrowForceMultiplierInputPressed();
+}
+
+void UGravityGunController::DestroyPickup()
+{
+	GravityGunComponent->DestroyPickup();
 }

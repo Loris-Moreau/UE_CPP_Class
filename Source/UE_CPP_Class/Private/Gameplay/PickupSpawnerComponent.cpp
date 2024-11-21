@@ -4,6 +4,7 @@
 #include "Gameplay/PickupSpawnerComponent.h"
 
 #include "Engine/World.h"
+#include "Gameplay/GravityGunComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/PickupComponent.h"
 
@@ -35,6 +36,8 @@ void UPickupSpawnerComponent::BeginPlay()
 void UPickupSpawnerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UpdateCooldownTimer(DeltaTime);
 }
 
 void UPickupSpawnerComponent::GetPickupAmount()
@@ -47,6 +50,12 @@ void UPickupSpawnerComponent::GetPickupAmount()
 
 void UPickupSpawnerComponent::spawnPickup(int type, FVector pos)
 {
+	if (bUpdateCooldownTimer)
+		return;
+	
+	CurrentCooldownTime = 0.f;
+	bUpdateCooldownTimer = true;
+	
 	FRotator rot = {0, 0, 0};
 
 	FActorSpawnParameters spawnParams;
@@ -78,23 +87,38 @@ void UPickupSpawnerComponent::spawnPickup(int type, FVector pos)
 	pickupArray.Add(spawnedActor);
 }
 
-void UPickupSpawnerComponent::destroyPickup()
+void UPickupSpawnerComponent::destroyPickup(AActor* pickup)
 {
+	bool itemCheck = pickupArray.Contains(pickup);
 	int indexCheck = pickupArray.Num()-1;
-	if (!pickupArray.IsValidIndex(indexCheck))
+	pickupArray.Find(pickup, indexCheck);
+	
+	if (!itemCheck || !pickupArray.IsValidIndex(indexCheck))
 		return;
 	
-	AActor* actorToDestroy = pickupArray.Last();
-	
-	if (!actorToDestroy)
+	if (!pickup)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor to Destroy is invalid"))
+		UE_LOG(LogTemp, Warning, TEXT("Actor to Destroy is invalid"));
 		return;
 	}
 	
-	UE_LOG(LogTemp, Log, TEXT("Actor Destroyed %s"), *actorToDestroy->GetName());
+	UE_LOG(LogTemp, Log, TEXT("Actor Destroyed %s"), *pickup->GetName());
 	
 	pickupArray.RemoveAt(indexCheck);
 	
-	actorToDestroy->Destroy();
+	pickup->Destroy();
+	
+} 
+
+void UPickupSpawnerComponent::UpdateCooldownTimer(float delta)
+{
+	if (!bUpdateCooldownTimer)
+		return;
+	
+	CurrentCooldownTime += delta;
+
+	if (CurrentCooldownTime >= CooldownTime)
+	{
+		bUpdateCooldownTimer = false;
+	}
 }

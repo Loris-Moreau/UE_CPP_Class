@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
 	class UInputAction* InputActionThrowObject;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input")
+	class UInputAction* InputActionDestroyPickup;
+	
 public:
 	void SetupInputComponentGravityGun(TObjectPtr<class UInputComponent> InputComponent, class AMain_Player* InCharacter);
 
@@ -59,4 +62,6 @@ protected:
 	void OnThrowForceMultiplierInputPressed();
 
 	// End of Exercice 2
+
+	void DestroyPickup();
 };

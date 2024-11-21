@@ -31,8 +31,6 @@ void UPickupSpawnerControllerComponent::SetupInputComponentSpawner(TObjectPtr<UI
 	EnhancedInputComponent->BindAction(InputActionSpawnTakeDestroy, ETriggerEvent::Triggered, this, &UPickupSpawnerControllerComponent::SpawnTakeDestroy);
 	EnhancedInputComponent->BindAction(InputActionSpawnThrowDestroy, ETriggerEvent::Triggered, this, &UPickupSpawnerControllerComponent::SpawnThrowDestroy);
 	
-	EnhancedInputComponent->BindAction(InputActionDestroyPickup, ETriggerEvent::Triggered, this, &UPickupSpawnerControllerComponent::DestroyPickup);
-	
 	Character = InCharacter;
 	SpawnerComponent = Character->GetComponentByClass<UPickupSpawnerComponent>();
 }
@@ -46,7 +44,7 @@ void UPickupSpawnerControllerComponent::TickComponent(float DeltaTime, ELevelTic
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	spawnPos = Character->GetActorLocation() + diff*Character->GetActorForwardVector();
+	spawnPos = Character->GetActorLocation() + diff * Character->GetActorForwardVector();
 }
 
 void UPickupSpawnerControllerComponent::GetPickupAmount()
@@ -79,12 +77,4 @@ void UPickupSpawnerControllerComponent::SpawnTakeDestroy()
 		return;
 	
 	SpawnerComponent->spawnPickup(3, spawnPos);
-}
-
-void UPickupSpawnerControllerComponent::DestroyPickup()
-{
-	if (!SpawnerComponent.IsValid())
-		return;
-	
-	SpawnerComponent->destroyPickup();
 }

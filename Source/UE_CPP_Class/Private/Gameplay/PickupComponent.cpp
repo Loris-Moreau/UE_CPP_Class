@@ -7,8 +7,10 @@
 
 #include "Engine/LocalPlayer.h"
 #include "Gameplay/PickupSpawnerComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Player/Main_Player.h"
+#include "Gameplay/GravityGunComponent.h"
 
 UPickUpComponent::UPickUpComponent()
 {
@@ -18,6 +20,9 @@ UPickUpComponent::UPickUpComponent()
 void UPickUpComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Character = Cast<AMain_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	GravityGunComponent = Character->GetComponentByClass<UGravityGunComponent>();
 }
 
 void UPickUpComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -58,7 +63,12 @@ void UPickUpComponent::DestroyPickUp()
 	OnPickUpDestroyed.Broadcast();
 
 	// Destroy the pickup
-	GetOwner()->Destroy();
+	//GetOwner()->Destroy();
+	if (!GravityGunComponent.IsValid())
+		return;
+	
+	UE_LOG(LogTemp,Log,TEXT("kawabunga"));
+	GravityGunComponent->DestroyPickup(GetOwner());
 }
 
 EPickUpType UPickUpComponent::GetPickUpType() const

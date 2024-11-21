@@ -45,7 +45,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "PickUp")
 	FPickUpStruct PickUpStruct;
 
+	TWeakObjectPtr<class AMain_Player> Character = nullptr;
+	TWeakObjectPtr<class UGravityGunComponent> GravityGunComponent = nullptr;
 
+	
 	// Destruction
 protected:
 	FTimerHandle PickUpDestructionTimerHandle;

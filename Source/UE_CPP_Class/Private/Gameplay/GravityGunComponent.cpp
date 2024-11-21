@@ -9,6 +9,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
+#include "Gameplay/PickupSpawnerComponent.h"
 
 UGravityGunComponent::UGravityGunComponent()
 {
@@ -23,6 +24,8 @@ void UGravityGunComponent::BeginPlay()
 	Character = Cast<AMain_Player>(GetOwner());
 	CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 	GravityGunCollisionChannel = UEngineTypes::ConvertToCollisionChannel(GravityGunCollisionTraceChannel);
+
+	pickupSpawnerComponent = Character->GetComponentByClass<UPickupSpawnerComponent>();
 }
 
 
@@ -63,7 +66,7 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 		return;
 	
 
-	// Check for Pick Up Component
+	// Check for PickUp Component
 	CurrentPickUpComponent = HitResult.GetActor()->GetComponentByClass<UPickUpComponent>();
 	if (!CurrentPickUpComponent.IsValid())
 		return;
@@ -216,4 +219,20 @@ float UGravityGunComponent::GetTimeToReachMaxThrow()
 float UGravityGunComponent::GetCurrentTimeToReachMaxThrow()
 {
 	return CurrentTimeToReachMaxThrowForce;
+}
+
+void UGravityGunComponent::DestroyPickup(AActor* actor)
+{
+	if (!pickupSpawnerComponent.IsValid())
+		return;
+
+	if (actor)
+	{
+		pickupSpawnerComponent->destroyPickup(Cast<AActor>(actor));
+	}
+	else
+	{
+		pickupSpawnerComponent->destroyPickup(Cast<AActor>(CurrentPickUp));
+	}
+	
 }
