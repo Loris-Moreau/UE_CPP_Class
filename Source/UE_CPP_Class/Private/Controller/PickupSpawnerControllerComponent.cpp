@@ -7,9 +7,11 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
+#include "Engine/World.h"
 
 #include "Player/Main_Player.h"
 #include "Gameplay/PickupSpawnerComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 UPickupSpawnerControllerComponent::UPickupSpawnerControllerComponent()
 {
@@ -38,13 +40,17 @@ void UPickupSpawnerControllerComponent::SetupInputComponentSpawner(TObjectPtr<UI
 void UPickupSpawnerControllerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 }
 
 void UPickupSpawnerControllerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	spawnPos = Character->GetActorLocation() + diff * Character->GetActorForwardVector();
+	//spawnPos = Character->GetActorLocation() + diff * Character->GetActorForwardVector();
+	spawnPos = CameraManager->GetCameraLocation() + (CameraManager->GetActorForwardVector() * PickUpDistanceFromPlayer) + (CameraManager->GetActorUpVector() * PickUpHeightFromPlayer);
+	
 }
 
 void UPickupSpawnerControllerComponent::GetPickupAmount()
