@@ -11,6 +11,7 @@
 
 #include "Player/Main_Player.h"
 #include "Controller/GravityGunController.h"
+#include "Controller/PickupSpawnerControllerComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 
@@ -77,6 +78,13 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 	{
 		GravityGunController->SetupInputComponentGravityGun(InputComponent, Character);
 	}
+	// Pickup Spawner
+	SpawnerController = GetComponentByClass<UPickupSpawnerControllerComponent>();
+	if (SpawnerController.IsValid())
+	{
+		SpawnerController->SetupInputComponentSpawner(InputComponent, Character);
+	}
+	
 }
 
 void AMainPlayerController::MovePlayer(const FInputActionValue& Value)

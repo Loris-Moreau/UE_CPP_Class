@@ -36,14 +36,14 @@ void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UGravityGunComponent::OnTakeObjectInputPressed()
 {
-	// Make sure that we don't already have a pick up in our hands
+	// Make sure that we don't already have a pickup in our hands
 	if (CurrentPickUp.IsValid())
 	{
 		ReleasePickUp();
 		return;
 	}
 
-	// First - Launch a raycast to find a pick up
+	// First - Launch a raycast to find a pickup
 	const FVector RaycastStart = CameraManager->GetCameraLocation();
 	const FVector RaycastEnd = RaycastStart + (CameraManager->GetActorForwardVector() * RaycastSize);
 

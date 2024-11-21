@@ -1,21 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Gameplay/PickupComponent.h"
+#include "ComponentUtils.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
-#include "Gameplay/PickUpComponent.h"
+
+#include "Engine/LocalPlayer.h"
+#include "Gameplay/PickupSpawnerComponent.h"
+
+#include "Player/Main_Player.h"
 
 UPickUpComponent::UPickUpComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
 }
-
 
 void UPickUpComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void UPickUpComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -55,7 +57,7 @@ void UPickUpComponent::DestroyPickUp()
 	// Broadcast destruction event
 	OnPickUpDestroyed.Broadcast();
 
-	// Destroy the pick up
+	// Destroy the pickup
 	GetOwner()->Destroy();
 }
 

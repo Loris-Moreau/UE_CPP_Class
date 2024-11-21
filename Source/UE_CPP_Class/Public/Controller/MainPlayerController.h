@@ -20,6 +20,7 @@ public:
 protected:
 	class AMain_Player* Character = nullptr;
 	TWeakObjectPtr<class UGravityGunController> GravityGunController = nullptr;
+	TWeakObjectPtr<class UPickupSpawnerControllerComponent> SpawnerController = nullptr;
 
 // Inputs
 protected:
