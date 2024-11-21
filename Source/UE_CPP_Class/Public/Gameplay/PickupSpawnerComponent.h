@@ -47,7 +47,7 @@ public:
 
 	// Cooldown Timer
 	UPROPERTY(EditDefaultsOnly, Category = "Parameters|Cooldown", meta = (ClampMin = "0.05", ClampMax = "10.0"))
-	float CooldownTime = 2.f;
+	float CooldownTime = 1.f;
 	float CurrentCooldownTime = 0.f;
 	
 	bool bUpdateCooldownTimer = false;

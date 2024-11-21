@@ -54,12 +54,13 @@ protected:
 	FVector spawnPos = { -500, -500, 500};
 };
 
+
+// TODO :
 /*
- *Done : Timer (min Time between 2 spawns)
  *Done : Spawn Input
  *Done : input to let us know how many pickups there are on the map
  *Done : Pickup Quota
+ *Done : Timer (min Time between 2 spawns)
  *Done : Destroy the one in hand
- *
- *spawn pickup will be placed in hand if no pickup in hand
+ **spawn pickup will be placed in hand if no pickup in hand
 */
