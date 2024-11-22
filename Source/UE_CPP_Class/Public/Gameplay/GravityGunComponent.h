@@ -134,4 +134,8 @@ public:
 	//end of UI
 
 	void DestroyPickup(AActor* actor = nullptr);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="GravityGun|Curve")
+	class UCurveFloat* CurveFloat = nullptr;
 };

@@ -11,6 +11,8 @@
 #include "Engine/World.h"
 #include "Gameplay/PickupSpawnerComponent.h"
 
+#include "Curves/CurveFloat.h"
+
 UGravityGunComponent::UGravityGunComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -161,9 +163,17 @@ void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
 	// Throw Pick Up
 	if (bThrowPickUp)
 	{
-		const float ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
-		const float ThrowForce = FMath::Lerp(PickUpThrowForce, PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
-
+		float ThrowForce;
+		if (CurveFloat)
+		{
+			ThrowForce = CurveFloat->GetFloatValue(CurrentTimeToReachMaxThrowForce) * CurrentPickUpThrowForceMultiplier;
+		}
+		else
+		{
+			const float ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
+			ThrowForce = FMath::Lerp(PickUpThrowForce, PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
+		}
+		
 		const FVector Impusle = CameraManager->GetActorForwardVector() * ThrowForce;
 		CurrentPickUpStaticMesh->AddImpulse(Impusle);
 
