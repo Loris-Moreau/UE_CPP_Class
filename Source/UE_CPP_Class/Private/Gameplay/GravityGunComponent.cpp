@@ -120,6 +120,38 @@ void UGravityGunComponent::OnThrowObjectInputPressed()
 	// Exercice 2 - Prepare throw force timer
 	CurrentTimeToReachMaxThrowForce = 0.f;
 	bUpdateThrowForceTimer = true;
+	
+	FPredictProjectilePathParams predictParams;
+	/*
+	FVector StartLocation;
+	FVector LaunchVelocity;
+	bool bTraceWithCollision;
+	float ProjectileRadius;
+	float MaxSimTime;
+	bool bTraceWithChannel;
+	TEnumAsByte<ECollisionChannel> TraceChannel;
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	TArray<TObjectPtr<AActor>> ActorsToIgnore;
+	float SimFrequency;
+	float OverrideGravityZ;
+	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
+	float DrawDebugTime;
+	bool bTraceComplex;
+	*/
+	FPredictProjectilePathResult predictresults;
+	UGameplayStatics::PredictProjectilePath(GetWorld(), predictParams, predictresults);
+	DrawDebugSphere(GetWorld(), predictresults.LastTraceDestination.Location, 10.0f, 4, FColor::Red);
+/*
+	const UWorld* InWorld, 
+	__resharper_unknown_type const& Center, 
+	float Radius, 
+	int32 Segments, 
+	FColor const& Color, 
+	bool bPersistentLines = false, 
+	float LifeTime = -1, 
+	uint8 DepthPriority = 0, 
+	float Thickness = 0)
+*/
 }
 
 void UGravityGunComponent::OnThrowObjectInputReleased()
