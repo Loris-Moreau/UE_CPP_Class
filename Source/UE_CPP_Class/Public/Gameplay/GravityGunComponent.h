@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GravityGunDA.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/Actor.h"
 #include "GravityGunComponent.generated.h"
@@ -135,7 +136,18 @@ public:
 
 	void DestroyPickup(AActor* actor = nullptr);
 
+	// Curve & Data Asset
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="GravityGun|Curve")
 	class UCurveFloat* CurveFloat = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, Category="GravityGun|Data")
+	UGravityGunDA* dataAsset = nullptr;
+
+	void OnUpdateGravGunDataAsstet();
+	
+public:
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 };

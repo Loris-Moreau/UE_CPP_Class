@@ -17,6 +17,12 @@ AGoal::AGoal(const FObjectInitializer& ObjectInitializer)
 	{
 		SetRootComponent(CollisionBox);
 	}
+
+	pointLight = ObjectInitializer.CreateDefaultSubobject<UPointLightComponent>(this, "PointLight");
+	if(pointLight)
+	{
+		pointLight->SetupAttachment(RootComponent);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -71,3 +77,23 @@ void AGoal::DisplayScore() const
 	FString GoalName = UKismetSystemLibrary::GetDisplayName(this);
 	UE_LOG(LogTemp, Log, TEXT("%s has a score of %d"), *GoalName, Score);
 }
+
+void AGoal::UpdatePointLight()
+{
+	if (!pointLight)
+ 		return;
+	
+	pointLight->SetLightColor(FLinearColor::Red);
+}
+
+#if WITH_EDITOR
+void AGoal::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if(!IsTemplate() && !HasAnyFlags(RF_NeedLoad))
+	{
+		UpdatePointLight();
+	}
+}
+#endif

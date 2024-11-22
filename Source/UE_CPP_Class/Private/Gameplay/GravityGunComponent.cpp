@@ -163,21 +163,43 @@ void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
 	// Throw Pick Up
 	if (bThrowPickUp)
 	{
+		
 		float ThrowForce;
+		float ThrowForceAlpha;
+		
+		if(dataAsset)
+		{
+			/*
+			PickUpAngularForce = dataAsset->PickUpAngularForce;
+			PickUpThrowForce = dataAsset->PickUpThrowForce;
+			PickUpMaxThrowForce = dataAsset->PickUpMaxThrowForce;
+			TimeToReachMaxThrowForce = dataAsset->TimeToReachMaxThrowForce;
+			*/
+			ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / dataAsset->TimeToReachMaxThrowForce, 0.f, 1.f);
+			ThrowForce = FMath::Lerp(dataAsset->PickUpThrowForce, dataAsset->PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
+		}
 		if (CurveFloat)
 		{
 			ThrowForce = CurveFloat->GetFloatValue(CurrentTimeToReachMaxThrowForce) * CurrentPickUpThrowForceMultiplier;
 		}
 		else
 		{
-			const float ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
+			ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
 			ThrowForce = FMath::Lerp(PickUpThrowForce, PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
 		}
 		
 		const FVector Impusle = CameraManager->GetActorForwardVector() * ThrowForce;
 		CurrentPickUpStaticMesh->AddImpulse(Impusle);
 
-		const FVector AngularImpulse = FVector(FMath::RandRange(.0, PickUpAngularForce.X), FMath::RandRange(.0, PickUpAngularForce.Y), FMath::RandRange(.0, PickUpAngularForce.Z));
+		FVector AngularImpulse;
+		if(dataAsset)
+		{
+			AngularImpulse = FVector(FMath::RandRange(.0, dataAsset->PickUpAngularForce.X), FMath::RandRange(.0, dataAsset->PickUpAngularForce.Y), FMath::RandRange(.0, dataAsset->PickUpAngularForce.Z));
+		}
+		else
+		{
+			AngularImpulse = FVector(FMath::RandRange(.0, PickUpAngularForce.X), FMath::RandRange(.0, PickUpAngularForce.Y), FMath::RandRange(.0, PickUpAngularForce.Z));
+		}
 		CurrentPickUpStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
 	
 		// Check if destruction is required
@@ -223,7 +245,14 @@ void UGravityGunComponent::OnThrowForceMultiplierInputPressed()
 
 float UGravityGunComponent::GetTimeToReachMaxThrow()
 {
-	return TimeToReachMaxThrowForce;
+	if(dataAsset)
+	{
+		return dataAsset->TimeToReachMaxThrowForce;
+	}
+	else
+	{
+		return TimeToReachMaxThrowForce;
+	}
 }
 
 float UGravityGunComponent::GetCurrentTimeToReachMaxThrow()
@@ -246,3 +275,30 @@ void UGravityGunComponent::DestroyPickup(AActor* actor)
 	}
 	
 }
+
+void UGravityGunComponent::OnUpdateGravGunDataAsstet()
+{
+	if (!dataAsset)
+		return;
+
+	TimeToReachMaxThrowForce = dataAsset->TimeToReachMaxThrowForce;
+}
+
+#if WITH_EDITOR
+void UGravityGunComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	// get what was changed
+	FName propertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.GetPropertyName() : NAME_None;
+
+	// only update the blueprint
+	if (!IsTemplate() && !HasAnyFlags(RF_NeedLoad))
+	{
+		if (propertyName == GET_MEMBER_NAME_CHECKED(UGravityGunComponent, dataAsset))
+		{
+			OnUpdateGravGunDataAsstet();
+		}
+	}
+}
+#endif

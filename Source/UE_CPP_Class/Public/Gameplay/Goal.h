@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/PointLightComponent.h"
 #include "Controller/MainPlayerController.h"
 #include "GameFramework/Actor.h"
 #include "Goal.generated.h"
@@ -51,4 +52,14 @@ public:
 
 	
 	//End of Ex 4
+
+	UPROPERTY(EditDefaultsOnly)
+	class UPointLightComponent* pointLight = nullptr;
+
+#if  WITH_EDITOR
+	virtual void OnConstruction(const FTransform& Transform) override;
+#endif
+	
+protected:
+	void UpdatePointLight();
 };
