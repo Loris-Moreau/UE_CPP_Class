@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
 
 #include "Player/Main_Player.h"
 #include "Controller/GravityGunController.h"
@@ -17,6 +18,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/Goal.h"
+#include "UI/PauseMenuCommonAW.h"
 
 void AMainPlayerController::BeginPlay()
 {
@@ -58,6 +60,9 @@ void AMainPlayerController::SetupInputComponent()
 
 	// Exercice 3
 	EnhancedInputComponent->BindAction(InputActionScore, ETriggerEvent::Triggered, this, &AMainPlayerController::OnDisplayScoreInputPressed);
+
+	// Pause
+	EnhancedInputComponent->BindAction(InputActionPause, ETriggerEvent::Triggered, this, &AMainPlayerController::OnPausedInputPressed);
 }
 
 void AMainPlayerController::SetPawn(APawn* InPawn)
@@ -166,4 +171,18 @@ void AMainPlayerController::OnDisplayScoreInputPressed()
 			UE_LOG(LogTemp, Log, TEXT("This %s has %d Pickups Inside"), *GoalName, PickUpInside);
 		}
 	}
+}
+
+void AMainPlayerController::OnPausedInputPressed()
+{
+	if (pauseMenuWidget)
+	{
+		UPauseMenuCommonAW* currentPauseMenuWidget = Cast<UPauseMenuCommonAW>(CreateWidget<UPauseMenuCommonAW>(this, pauseMenuWidget));
+
+		if (currentPauseMenuWidget)
+		{
+			currentPauseMenuWidget->AddToViewport(0);
+		}
+	}
+	
 }

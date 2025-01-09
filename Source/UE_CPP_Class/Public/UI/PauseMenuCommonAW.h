@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
 #include "MainCommonButtonBase.h"
+#include "Controller/MainPlayerController.h"
 #include "PauseMenuCommonAW.generated.h"
 
 UCLASS(Abstract)
@@ -12,6 +13,10 @@ class UE_CPP_CLASS_API UPauseMenuCommonAW : public UCommonActivatableWidget
 
 protected:
 	virtual void NativeConstruct() override;
+	void OpenMenu();
+	void CloseMenu();
+
+	TWeakObjectPtr<class AMainPlayerController> playerController = nullptr;
 	
 // Buttons
 protected:
@@ -34,5 +39,4 @@ protected:
 	void OnOptionsClicked();
 	UFUNCTION()
 	void OnQuitClicked();
-	
 };

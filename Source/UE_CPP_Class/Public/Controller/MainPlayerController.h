@@ -32,7 +32,7 @@ protected:
 	class UInputAction* InputActionLook;
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Movement")
 	class UInputAction* InputActionJump;
-
+	
 protected:
 	void MovePlayer(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
@@ -55,7 +55,7 @@ public:
 // End of Mouse Sensitivity
 
 
-// Exercice 3
+// Exercise 3
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Score")
 	class UInputAction* InputActionScore;
@@ -68,5 +68,17 @@ protected:
 protected:
 	void OnDisplayScoreInputPressed();
 
-// End of Exercice 3
+// End of Exercise 3
+
+// Pause Menu
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Pause")
+	class UInputAction* InputActionPause;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Pause")
+	TSubclassOf<class UPauseMenuCommonAW> pauseMenuWidget = nullptr;
+	
+	void OnPausedInputPressed();
+	
+// End of Pause
 };
