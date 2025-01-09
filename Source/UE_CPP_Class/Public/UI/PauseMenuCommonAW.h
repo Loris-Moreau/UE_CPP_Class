@@ -39,4 +39,12 @@ protected:
 	void OnOptionsClicked();
 	UFUNCTION()
 	void OnQuitClicked();
+
+	UFUNCTION()
+	void OnOptionsMenuClosed(UUserWidget* closedWidget);
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enhanced Input|Pause")
+	TSubclassOf<class UOptionsMenuCommonAW> optionMenuWidget = nullptr;
+
+	
 };

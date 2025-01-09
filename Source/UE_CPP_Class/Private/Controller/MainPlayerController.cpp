@@ -184,5 +184,4 @@ void AMainPlayerController::OnPausedInputPressed()
 			currentPauseMenuWidget->AddToViewport(0);
 		}
 	}
-	
 }

@@ -1,6 +1,7 @@
 #include "UI/PauseMenuCommonAW.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "UI/OptionsMenuCommonAW.h"
 
 void UPauseMenuCommonAW::NativeConstruct()
 {
@@ -65,6 +66,7 @@ void UPauseMenuCommonAW::OnResumeClicked()
 
 void UPauseMenuCommonAW::OnRestartClicked()
 {
+	// Close Pause Menu to Regain Control on Restart
 	CloseMenu();
 	
 	// Get Map Name
@@ -75,7 +77,25 @@ void UPauseMenuCommonAW::OnRestartClicked()
 
 void UPauseMenuCommonAW::OnOptionsClicked()
 {
-	
+	if (optionMenuWidget)
+	{
+		UOptionsMenuCommonAW* currentOptionsMenuWidget = Cast<UOptionsMenuCommonAW>(CreateWidget<UOptionsMenuCommonAW>(this, optionMenuWidget));
+
+		if (currentOptionsMenuWidget)
+		{
+			currentOptionsMenuWidget->AddToViewport(0);
+			currentOptionsMenuWidget->OnNativeDestruct.AddUObject(this, &UPauseMenuCommonAW::OnOptionsMenuClosed);
+		}
+	}
+}
+
+void UPauseMenuCommonAW::OnOptionsMenuClosed(UUserWidget* closedWidget)
+{
+	// put focus back for gamepad
+	if (BIND_Options_Button)
+	{
+		BIND_Options_Button->SetFocus();
+	}
 }
 
 void UPauseMenuCommonAW::OnQuitClicked()
