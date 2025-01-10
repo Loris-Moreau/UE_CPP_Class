@@ -85,6 +85,8 @@ void UPauseMenuCommonAW::OnOptionsClicked()
 		{
 			currentOptionsMenuWidget->AddToViewport(0);
 			currentOptionsMenuWidget->OnNativeDestruct.AddUObject(this, &UPauseMenuCommonAW::OnOptionsMenuClosed);
+			
+			SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 }
@@ -96,6 +98,8 @@ void UPauseMenuCommonAW::OnOptionsMenuClosed(UUserWidget* closedWidget)
 	{
 		BIND_Options_Button->SetFocus();
 	}
+	
+	SetVisibility(ESlateVisibility::Visible);
 }
 
 void UPauseMenuCommonAW::OnQuitClicked()
