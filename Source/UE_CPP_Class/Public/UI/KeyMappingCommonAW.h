@@ -21,6 +21,9 @@ protected:
 	class UInputKeySelector* BIND_InputKeySelector= nullptr;
 	UPROPERTY(meta=(BindWidgetOptional))
 	class UCommonTextBlock* BIND_InputDisplayName = nullptr;
+	
+	UPROPERTY(meta=(BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_ResetButton = nullptr;
 
 	FName inputName;
 	FEnhancedActionKeyMapping displayedKey;
@@ -30,5 +33,9 @@ public:
 	void SetInputSelector(struct FEnhancedActionKeyMapping& inActionKeyMapping);
 	void SetDisplayName(FText inText);
 
+protected:
+	UFUNCTION()
 	void OnKeySelected(FInputChord selectedKey);
+
+	void OnResetButtonClicked();
 };

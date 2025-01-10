@@ -178,8 +178,5 @@ void UOptionsMenuCommonAW::displayMappableKeys()
 
 		// Place Widget in Vertical Box
 		BIND_keyBindingVertBox->AddChild(newKeyWidget);
-
-		// Update Keys
-		//keyBindingsWidget.OnKeySelected(keyName);
 	}
 }

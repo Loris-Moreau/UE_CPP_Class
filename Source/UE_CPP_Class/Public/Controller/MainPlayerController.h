@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerController.h"
+#include "UI/KeyMappingCommonAW.h"
 #include "MainPlayerController.generated.h"
 
 UCLASS()
@@ -90,6 +92,10 @@ protected:
 // KeyBinding
 public:
 	void OnUpdateBindedKey(FName keyName, FKey newKey);
-
+	void OnResetButtonClicked(FName inputName, struct FEnhancedActionKeyMapping& ActionKeyMapping, class UKeyMappingCommonAW* InWidget);
+	
+protected:
+	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = nullptr;
+	UEnhancedInputUserSettings* enhancedInputUserSettings = nullptr;
 // End of Keybindings
 };

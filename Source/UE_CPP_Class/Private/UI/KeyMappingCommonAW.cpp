@@ -4,12 +4,20 @@
 #include "Components/InputKeySelector.h"
 #include "Controller/MainPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/MainCommonButtonBase.h"
 
 void UKeyMappingCommonAW::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	
+	if(BIND_InputKeySelector)
+	{
+		BIND_InputKeySelector->OnKeySelected.AddUniqueDynamic(this, &UKeyMappingCommonAW::OnKeySelected);
+	}
+	if(BIND_ResetButton)
+	{
+		BIND_ResetButton->OnButtonClicked.AddUniqueDynamic(this, &UKeyMappingCommonAW::OnResetButtonClicked);
+	}
 }
 
 void UKeyMappingCommonAW::SetInputName(FName inName)
@@ -44,5 +52,15 @@ void UKeyMappingCommonAW::OnKeySelected(FInputChord selectedKey)
 	}
 
 	//Update Keys
+	playerController->OnUpdateBindedKey(inputName, selectedKey.Key);
+}
+
+void UKeyMappingCommonAW::OnResetButtonClicked()
+{
+	if(!playerController.IsValid())
+	{
+		return;
+	}
 	
+	playerController->OnResetButtonClicked(inputName, displayedKey, this);
 }

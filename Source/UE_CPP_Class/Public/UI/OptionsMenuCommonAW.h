@@ -60,9 +60,6 @@ protected:
 	
 // KeyBindings
 protected:
-	UFUNCTION()
-	void OnKeySelected(struct FInputChord selectedKey);
-	
 	UPROPERTY(meta=(BindWidgetOptional))
 	class UVerticalBox* BIND_keyBindingVertBox = nullptr;
 	

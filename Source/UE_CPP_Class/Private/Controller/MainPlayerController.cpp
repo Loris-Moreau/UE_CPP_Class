@@ -11,11 +11,14 @@
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "Blueprint/UserWidget.h"
 
+#include "PlayerMappableKeySettings.h"
+
 #include "Player/Main_Player.h"
 #include "Controller/GravityGunController.h"
 #include "Controller/PickupSpawnerControllerComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
+#include "GameFramework/GameUserSettings.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/Goal.h"
@@ -41,7 +44,7 @@ void AMainPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	// Bind to subsystem
-	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (!EnhancedInputSubsystem)
 		return;
 
@@ -66,7 +69,8 @@ void AMainPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(InputActionPause, ETriggerEvent::Triggered, this, &AMainPlayerController::OnPausedInputPressed);
 
 	// KeyBindings (Tell Unreal we're going to update the key in the Input Mapping Context)
-	if (UEnhancedInputUserSettings* enhancedInputUserSettings = EnhancedInputSubsystem->GetUserSettings())
+	enhancedInputUserSettings = EnhancedInputSubsystem->GetUserSettings();
+	if (enhancedInputUserSettings)
 	{
 		enhancedInputUserSettings->RegisterInputMappingContext(InputMapping);
 	}
@@ -216,5 +220,44 @@ void AMainPlayerController::OnPausedInputPressed()
 
 void AMainPlayerController::OnUpdateBindedKey(FName keyName, FKey newKey)
 {
+	if(!enhancedInputUserSettings)
+	{
+		return;
+	}
+
+	// Prepare new key
+	FMapPlayerKeyArgs InArgs;
+	InArgs.NewKey = newKey;
+	InArgs.MappingName = keyName;
+	InArgs.Slot = EPlayerMappableKeySlot::First;
+	FGameplayTagContainer FailureReason;
+	
+	// Update Key
+	enhancedInputUserSettings->MapPlayerKey(InArgs, FailureReason);
+
+	// Save the inputs
+	UGameUserSettings* GameUserSettings = UGameUserSettings::GetGameUserSettings();
+	GameUserSettings->ApplySettings(true);
+
+	enhancedInputUserSettings->ApplySettings();
+	enhancedInputUserSettings->SaveSettings();
+}
+
+void AMainPlayerController::OnResetButtonClicked(FName inputName, FEnhancedActionKeyMapping& ActionKeyMapping, UKeyMappingCommonAW* InWidget)
+{
+	if(!enhancedInputUserSettings)
+	{
+		return;
+	}
+
+	// Prepare the current data
+	FName KeyName = ActionKeyMapping.GetPlayerMappableKeySettings()->Name;
+	FMapPlayerKeyArgs CurrentKeyArgs;
+	CurrentKeyArgs.NewKey = ActionKeyMapping.Key;
+	CurrentKeyArgs.MappingName = KeyName;
+	CurrentKeyArgs.Slot = EPlayerMappableKeySlot::First;
+	FGameplayTagContainer FailureReason;
+
+	// Get the Key Profile to find the default data
 	
 }
