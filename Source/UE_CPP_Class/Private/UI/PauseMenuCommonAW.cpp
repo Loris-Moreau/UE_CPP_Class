@@ -71,7 +71,7 @@ void UPauseMenuCommonAW::OnRestartClicked()
 	
 	// Get Map Name
 	FName mapName = FName(UGameplayStatics::GetCurrentLevelName(this));
-	// Reopen Level (to restart it)
+	// Reopen Level (restart it)
 	UGameplayStatics::OpenLevel(this, mapName);
 }
 

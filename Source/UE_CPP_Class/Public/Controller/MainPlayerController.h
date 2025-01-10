@@ -49,6 +49,11 @@ protected:
 	float MouseSensitivityY = 1.f;
 
 public:
+	float GetMouseSensitivityX() const;
+	float GetMouseSensitivityY() const;
+	void SetMouseSensitivityX(float inValue);
+	void SetMouseSensitivityY(float inValue);
+	
 	virtual void AddPitchInput(float Value) override;
 	virtual void AddYawInput(float Value) override;
 
@@ -81,4 +86,10 @@ protected:
 	void OnPausedInputPressed();
 	
 // End of Pause
+
+// KeyBinding
+public:
+	void OnUpdateBindedKey(FName keyName, FKey newKey);
+
+// End of Keybindings
 };

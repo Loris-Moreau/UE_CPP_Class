@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 #include "Blueprint/UserWidget.h"
 
 #include "Player/Main_Player.h"
@@ -63,6 +64,13 @@ void AMainPlayerController::SetupInputComponent()
 
 	// Pause
 	EnhancedInputComponent->BindAction(InputActionPause, ETriggerEvent::Triggered, this, &AMainPlayerController::OnPausedInputPressed);
+
+	// KeyBindings (Tell Unreal we're going to update the key in the Input Mapping Context)
+	if (UEnhancedInputUserSettings* enhancedInputUserSettings = EnhancedInputSubsystem->GetUserSettings())
+	{
+		enhancedInputUserSettings->RegisterInputMappingContext(InputMapping);
+	}
+	
 }
 
 void AMainPlayerController::SetPawn(APawn* InPawn)
@@ -140,6 +148,26 @@ void AMainPlayerController::Jump()
 	Character->Jump();
 }
 
+float AMainPlayerController::GetMouseSensitivityX() const
+{
+	return MouseSensitivityX;
+}
+
+float AMainPlayerController::GetMouseSensitivityY() const
+{
+	return MouseSensitivityY;
+}
+
+void AMainPlayerController::SetMouseSensitivityX(float inValue)
+{
+	MouseSensitivityX = inValue;
+}
+
+void AMainPlayerController::SetMouseSensitivityY(float inValue)
+{
+	MouseSensitivityY = inValue;
+}
+
 void AMainPlayerController::AddPitchInput(float Value)
 {
 	float MultipliedValue = Value * MouseSensitivityY;
@@ -184,4 +212,9 @@ void AMainPlayerController::OnPausedInputPressed()
 			currentPauseMenuWidget->AddToViewport(0);
 		}
 	}
+}
+
+void AMainPlayerController::OnUpdateBindedKey(FName keyName, FKey newKey)
+{
+	
 }

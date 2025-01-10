@@ -45,6 +45,4 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Enhanced Input|Pause")
 	TSubclassOf<class UOptionsMenuCommonAW> optionMenuWidget = nullptr;
-
-	
 };
