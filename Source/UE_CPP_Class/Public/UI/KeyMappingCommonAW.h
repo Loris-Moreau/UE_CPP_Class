@@ -2,40 +2,49 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
+
 #include "EnhancedActionKeyMapping.h"
+
 #include "KeyMappingCommonAW.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class UE_CPP_CLASS_API UKeyMappingCommonAW : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 
-	virtual void NativeConstruct() override;
-	
-	TWeakObjectPtr<class AMainPlayerController> playerController = nullptr;
-	
-	
-// KeyBindings
 protected:
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UInputKeySelector* BIND_InputKeySelector= nullptr;
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UCommonTextBlock* BIND_InputDisplayName = nullptr;
-	
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UMainCommonButtonBase* BIND_ResetButton = nullptr;
+	virtual void NativeConstruct() override;
+	class AMainPlayerController* PlayerController = nullptr;
 
-	FName inputName;
-	FEnhancedActionKeyMapping displayedKey;
-	
-public:
-	void SetInputName(FName inName);
-	void SetInputSelector(struct FEnhancedActionKeyMapping& inActionKeyMapping);
-	void SetDisplayName(FText inText);
+	// Keybindings
+protected:
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UInputKeySelector* BIND_InputKeySelector = nullptr;
+	FName InputName;
+	FEnhancedActionKeyMapping DisplayedKey;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UCommonTextBlock* BIND_InputDisplayName = nullptr;
 
 protected:
 	UFUNCTION()
-	void OnKeySelected(FInputChord selectedKey);
+	void OnKeySelected(struct FInputChord SelectedKey);
 
+public:
+	void SetInputName(FName InName);
+	void SetInputSelector(FEnhancedActionKeyMapping& InKeyMapping);
+	void SetDisplayName(FText InText);
+
+	// End of Keybindings
+	
+	// Reset
+protected:
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_ResetButton = nullptr;
+
+protected:
+	UFUNCTION()
 	void OnResetButtonClicked();
+
+	// End of Reset
 };

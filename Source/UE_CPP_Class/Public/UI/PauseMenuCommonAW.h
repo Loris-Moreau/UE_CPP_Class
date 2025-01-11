@@ -2,47 +2,53 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
-#include "MainCommonButtonBase.h"
-#include "Controller/MainPlayerController.h"
 #include "PauseMenuCommonAW.generated.h"
 
 UCLASS(Abstract)
 class UE_CPP_CLASS_API UPauseMenuCommonAW : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
-
+	
 protected:
 	virtual void NativeConstruct() override;
 	void OpenMenu();
-	void CloseMenu();
 
-	TWeakObjectPtr<class AMainPlayerController> playerController = nullptr;
-	
-// Buttons
+	TWeakObjectPtr<class AMainPlayerController> PlayerController = nullptr;
+
+	// Button
 protected:
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UMainCommonButtonBase* BIND_Resume_Button = nullptr;
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UMainCommonButtonBase* BIND_Restart_Button = nullptr;
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UMainCommonButtonBase* BIND_Options_Button = nullptr;
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UMainCommonButtonBase* BIND_Quit_Button = nullptr;
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_ResumeButton = nullptr;
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_RestartButton = nullptr;
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_QuitButton = nullptr;
 
-// Button Functions
 protected:
 	UFUNCTION()
 	void OnResumeClicked();
 	UFUNCTION()
 	void OnRestartClicked();
 	UFUNCTION()
-	void OnOptionsClicked();
-	UFUNCTION()
 	void OnQuitClicked();
 
+	// End of Button
+
+
+	// Options
+protected:
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_OptionButton = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Option")
+	TSubclassOf<class UOptionsMenuCommonAW> OptionMenuWidget = nullptr;
+
+protected:
 	UFUNCTION()
-	void OnOptionsMenuClosed(UUserWidget* closedWidget);
-	
-	UPROPERTY(EditDefaultsOnly, Category="Enhanced Input|Pause")
-	TSubclassOf<class UOptionsMenuCommonAW> optionMenuWidget = nullptr;
+	void OnOptionClicked();
+
+	UFUNCTION()
+	void OnOptionMenuClosed(UUserWidget* ClosedWidget);
+
+	// End of Options
 };

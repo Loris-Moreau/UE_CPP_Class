@@ -1,4 +1,5 @@
 #include "UI/MainCommonButtonBase.h"
+#include "CommonTextBlock.h"
 
 void UMainCommonButtonBase::NativePreConstruct()
 {

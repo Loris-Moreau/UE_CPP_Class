@@ -2,69 +2,67 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
-#include "UI/MainCommonButtonBase.h"
 #include "OptionsMenuCommonAW.generated.h"
+
 
 UCLASS(Abstract)
 class UE_CPP_CLASS_API UOptionsMenuCommonAW : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 
+protected:
 	virtual void NativeConstruct() override;
 	void OpenMenu();
-	void CloseMenu();
-	
-	TWeakObjectPtr<class AMainPlayerController> playerController = nullptr;
-	
-	// Buttons
+
+	TWeakObjectPtr<class AMainPlayerController> PlayerController = nullptr;
+
+
+	// Button
 protected:
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UMainCommonButtonBase* BIND_Resume_Button = nullptr;
-	
-	// Button Functions
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UMainCommonButtonBase* BIND_ExitButton = nullptr;
+
 protected:
 	UFUNCTION()
-	void OnResumeClicked();
-	
-// Sensitivity
-public:
-	//Getter
-	float GetMouseSensitivity_X() const;
-	float GetMouseSensitivity_Y() const;
-	//Setter
-	float SetMouseSensitivity_X(float inSensitivityX);
-	float SetMouseSensitivity_Y(float inSensitivityY);
+	void OnExitButtonClicked();
 
-	float mouseSensitivity_X = 0.75f;
-	float mouseSensitivity_Y = 0.75f;
+	// End of Button
 
-// Sliders
+
+	// Sliders
 protected:
-	UPROPERTY(meta=(BindWidgetOptional))
-	class USlider* BIND_X_Slider = nullptr;
-	UPROPERTY(meta=(BindWidgetOptional))
-	class USlider* BIND_Y_Slider = nullptr;
-	
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UCommonTextBlock* BIND_X_Sensitivity_Text = nullptr;
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UCommonTextBlock* BIND_Y_Sensitivity_Text = nullptr;
+	UPROPERTY(meta = (BindWidgetOptional))
+	class USlider* BIND_XSlider = nullptr;
+	UPROPERTY(meta = (BindWidgetOptional))
+	class USlider* BIND_YSlider = nullptr;
 
-	UFUNCTION()
-	void ReceiveXSliderValue(float inXValue);
-	UFUNCTION()
-	void ReceiveYSliderValue(float inYValue);
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UCommonTextBlock* BIND_XDisplay = nullptr;
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UCommonTextBlock* BIND_YDisplay = nullptr;
 
-	void DisplaySensitivity_X(float inXValue);
-	void DisplaySensitivity_Y(float inYValue);
-	
-// KeyBindings
 protected:
-	UPROPERTY(meta=(BindWidgetOptional))
-	class UVerticalBox* BIND_keyBindingVertBox = nullptr;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Enhanced Input|Bindings")
-	TSubclassOf<class UKeyMappingCommonAW> keyBindingsWidget = nullptr;
+	UFUNCTION()
+	void RecieveXSliderValue(float InFloat);
+	UFUNCTION()
+	void RecieveYSliderValue(float InFloat);
 
-	void displayMappableKeys();
+	void DisplaySensitivityX(float InSensitivity);
+	void DisplaySensitivityY(float InSensitivity);
+
+	// End of Sliders
+
+
+	// Keybindings
+protected:
+	UPROPERTY(meta = (BindWidgetOptional))
+	class UVerticalBox* BIND_KeybindingsVerticalBox = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Keybindings")
+	TSubclassOf<class UKeyMappingCommonAW> KeybindingsWidget = nullptr;
+
+protected:
+	void DisplayMappableKeys();
+
+	// End of Keybindings
 };

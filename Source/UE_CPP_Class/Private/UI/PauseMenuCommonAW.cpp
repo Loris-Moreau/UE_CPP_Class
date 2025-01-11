@@ -1,111 +1,127 @@
 #include "UI/PauseMenuCommonAW.h"
+#include "UI/MainCommonButtonBase.h"
+#include "UI/OptionsMenuCommonAW.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "UI/OptionsMenuCommonAW.h"
+
+#include "Controller/MainPlayerController.h"
 
 void UPauseMenuCommonAW::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
-	// Get Player Controller
-	playerController = Cast<AMainPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	
+
+	// Get player controller
+	PlayerController = Cast<AMainPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+
 	OpenMenu();
-	
-	if (BIND_Resume_Button)
+
+	// Bind the buttons
+	if (BIND_ResumeButton)
 	{
-		BIND_Resume_Button->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnResumeClicked);
-		// Set Focus on this button (First) for Gamepad
-		BIND_Resume_Button->SetFocus();
+		BIND_ResumeButton->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnResumeClicked);
+		BIND_ResumeButton->SetFocus(); // Set the focus on the first button for using a gamepad
 	}
-	if (BIND_Restart_Button)
+
+	if (BIND_RestartButton)
 	{
-		BIND_Restart_Button->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnRestartClicked);
+		BIND_RestartButton->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnRestartClicked);
 	}
-	if (BIND_Options_Button)
+
+	if (BIND_QuitButton)
 	{
-		BIND_Options_Button->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnOptionsClicked);
+		BIND_QuitButton->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnQuitClicked);
 	}
-	if (BIND_Quit_Button)
+
+	if (BIND_OptionButton)
 	{
-		BIND_Quit_Button->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnQuitClicked);
+		BIND_OptionButton->OnButtonClicked.AddUniqueDynamic(this, &UPauseMenuCommonAW::OnOptionClicked);
 	}
 }
 
 void UPauseMenuCommonAW::OpenMenu()
 {
+	// Display the Widget
 	SetVisibility(ESlateVisibility::Visible);
-	
-	if (playerController.IsValid())
-	{
-		playerController->SetShowMouseCursor(true);
-		playerController->SetInputMode(FInputModeUIOnly{});
-	}
-	
-	UGameplayStatics::SetGamePaused(this, true);
-}
 
-void UPauseMenuCommonAW::CloseMenu()
-{
-	SetVisibility(ESlateVisibility::Collapsed);
-	RemoveFromParent();
-	
-	if (playerController.IsValid())
+	// Update the inputs
+	if (PlayerController.IsValid())
 	{
-		playerController->SetShowMouseCursor(false);
-		playerController->SetInputMode(FInputModeGameOnly{});
+		PlayerController->SetShowMouseCursor(true);
+		PlayerController->SetInputMode(FInputModeUIOnly{});
 	}
-	
-	UGameplayStatics::SetGamePaused(this, false);
+
+	// Pause the Game
+	UGameplayStatics::SetGamePaused(this, true);
 }
 
 void UPauseMenuCommonAW::OnResumeClicked()
 {
-	CloseMenu();
+	// Display the Widget
+	SetVisibility(ESlateVisibility::Collapsed);
+	RemoveFromParent();
+
+	// Update the inputs
+	if (PlayerController.IsValid())
+	{
+		PlayerController->SetShowMouseCursor(false);
+		PlayerController->SetInputMode(FInputModeGameOnly{});
+	}
+
+	// Pause the Game
+	UGameplayStatics::SetGamePaused(this, false);
 }
 
 void UPauseMenuCommonAW::OnRestartClicked()
 {
-	// Close Pause Menu to Regain Control on Restart
-	CloseMenu();
-	
 	// Get Map Name
-	FName mapName = FName(UGameplayStatics::GetCurrentLevelName(this));
-	// Reopen Level (restart it)
-	UGameplayStatics::OpenLevel(this, mapName);
+	FName LevelName = FName(*UGameplayStatics::GetCurrentLevelName(this));
+	// Start the Map
+	UGameplayStatics::OpenLevel(this, LevelName);
+
+	// Give back the control to the player
+	if (!PlayerController.IsValid())
+	{
+		PlayerController = Cast<AMainPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	}
+
+	PlayerController->SetInputMode(FInputModeGameOnly{});
+	PlayerController->SetShowMouseCursor(false);
+
+	// Destroy the widget
+	RemoveFromParent();
 }
 
-void UPauseMenuCommonAW::OnOptionsClicked()
+void UPauseMenuCommonAW::OnQuitClicked()
 {
-	if (optionMenuWidget)
+	if (PlayerController.IsValid())
 	{
-		UOptionsMenuCommonAW* currentOptionsMenuWidget = Cast<UOptionsMenuCommonAW>(CreateWidget<UOptionsMenuCommonAW>(this, optionMenuWidget));
+		UKismetSystemLibrary::QuitGame(this, PlayerController.Get(), EQuitPreference::Quit, true);
+	}
+}
 
-		if (currentOptionsMenuWidget)
+void UPauseMenuCommonAW::OnOptionClicked()
+{
+	// Create and display the widget
+	if (OptionMenuWidget)
+	{
+		UOptionsMenuCommonAW* CurrentOptionMenuWidget =
+			Cast<UOptionsMenuCommonAW>(CreateWidget<UOptionsMenuCommonAW>(this, OptionMenuWidget));
+		if (CurrentOptionMenuWidget)
 		{
-			currentOptionsMenuWidget->AddToViewport(0);
-			currentOptionsMenuWidget->OnNativeDestruct.AddUObject(this, &UPauseMenuCommonAW::OnOptionsMenuClosed);
-			
+			CurrentOptionMenuWidget->AddToViewport(0);
+			CurrentOptionMenuWidget->OnNativeDestruct.AddUObject(this, &UPauseMenuCommonAW::OnOptionMenuClosed);
 			SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 }
 
-void UPauseMenuCommonAW::OnOptionsMenuClosed(UUserWidget* closedWidget)
+void UPauseMenuCommonAW::OnOptionMenuClosed(UUserWidget* ClosedWidget)
 {
-	// put focus back for gamepad
-	if (BIND_Options_Button)
+	// Reset focus back to Option button when closing the Option Menu
+	if (BIND_OptionButton)
 	{
-		BIND_Options_Button->SetFocus();
+		BIND_OptionButton->SetFocus();
 	}
-	
-	SetVisibility(ESlateVisibility::Visible);
-}
 
-void UPauseMenuCommonAW::OnQuitClicked()
-{
-	if (playerController.IsValid())
-	{
-		UKismetSystemLibrary::QuitGame(this, playerController.Get(), EQuitPreference::Quit, true);
-	}
+	SetVisibility(ESlateVisibility::Visible);
 }

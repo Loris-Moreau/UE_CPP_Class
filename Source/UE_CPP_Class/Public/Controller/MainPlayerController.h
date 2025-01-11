@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerController.h"
-#include "UI/KeyMappingCommonAW.h"
 #include "MainPlayerController.generated.h"
 
 UCLASS()
@@ -85,17 +83,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enhanced Input|Pause")
 	TSubclassOf<class UPauseMenuCommonAW> pauseMenuWidget = nullptr;
 	
-	void OnPausedInputPressed();
+	void OnPauseInputPressed();
 	
 // End of Pause
 
-// KeyBinding
-public:
-	void OnUpdateBindedKey(FName keyName, FKey newKey);
-	void OnResetButtonClicked(FName inputName, struct FEnhancedActionKeyMapping& ActionKeyMapping, class UKeyMappingCommonAW* InWidget);
-	
+	// Keybindings
 protected:
-	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = nullptr;
-	UEnhancedInputUserSettings* enhancedInputUserSettings = nullptr;
-// End of Keybindings
+	class UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = nullptr;
+	class UEnhancedInputUserSettings* EnhancedInputUserSettings = nullptr;
+
+public:
+	void OnUpdateBindedKey(FName InputName, FKey NewKey);
+	void OnResetBindedKey(FName InputName, struct FEnhancedActionKeyMapping& ActionKeyMapping, class UKeyMappingCommonAW* InWidget);
+
+	// End of Keybindings
 };

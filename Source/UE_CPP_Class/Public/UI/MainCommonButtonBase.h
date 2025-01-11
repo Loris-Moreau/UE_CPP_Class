@@ -2,9 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonButtonBase.h"
-#include "CommonTextBlock.h"
 #include "MainCommonButtonBase.generated.h"
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonCliked);
 
@@ -28,6 +26,7 @@ protected:
 // Event
 public:
 	FOnButtonCliked OnButtonClicked;
+	
 protected:
 	virtual void NativeOnClicked() override;
 };
