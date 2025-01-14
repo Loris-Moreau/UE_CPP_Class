@@ -3,12 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AI/AIEnums.h"
 #include "Components/PointLightComponent.h"
 #include "Controller/MainPlayerController.h"
 #include "GameFramework/Actor.h"
 #include "Goal.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSendScoreDelegate, unsigned int, Score, FString, GoalName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAISphereOverlapDelegate, bool, bIsOverlaped,
+	EAIBehaviourType, BehaviourType, AActor*, OverlapedActor);
 
 UCLASS()
 class UE_CPP_CLASS_API AGoal : public AActor
@@ -62,4 +65,24 @@ public:
 	
 protected:
 	void UpdatePointLight();
+
+// AI Sphere
+protected:
+	UPROPERTY(EditAnywhere, Category="Goal | AI")
+	EAIBehaviourType BehaviourType = EAIBehaviourType::None;	
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* AIBehaviourCollisionSphere = nullptr;
+
+public:
+	FAISphereOverlapDelegate OnAISphereOverlap;
+	
+protected:
+	UFUNCTION()
+	void OnAICollisionSphereBeginOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	UFUNCTION()
+	void OnAICollisionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	
 };

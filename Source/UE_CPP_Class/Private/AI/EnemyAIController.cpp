@@ -1,10 +1,13 @@
-#include "AI/EnemyAIController.h"
+﻿#include "AI/EnemyAIController.h"
+
+#include "Kismet/GameplayStatics.h"
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Gameplay/GravityGunComponent.h"
-#include "Kismet/GameplayStatics.h"
+
 #include "Player/Main_Player.h"
+#include "Gameplay/GravityGunComponent.h"
+
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -15,7 +18,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	// Start the behaviour tree
+	// Start the Enemy Behavior Tree
 	if (EnemyBehaviourTree)
 	{
 		RunBehaviorTree(EnemyBehaviourTree);
@@ -25,23 +28,22 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// Get Gravity Gun Component from the player & bind to event
-	if(AMain_Player* MainPlayer =
-		Cast<AMain_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+
+	// Get the gravity gun component from the player and bind to its event
+	if (AMain_Player* MainPlayer = Cast<AMain_Player>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		if(UGravityGunComponent* GravityGunComponent = MainPlayer->FindComponentByClass<UGravityGunComponent>())
+		if (UGravityGunComponent* GravityGunComponent = MainPlayer->FindComponentByClass<UGravityGunComponent>())
 		{
 			GravityGunComponent->OnPlayerHasPickup.AddUniqueDynamic(this, &AEnemyAIController::OnPlayerHasPickup);
 		}
 	}
 }
 
-void AEnemyAIController::OnPlayerHasPickup(bool bInPlayerHasPickup)
+void AEnemyAIController::OnPlayerHasPickup(bool bInPlayerHasPickUp)
 {
 	// Update Blackboard Values
 	if(Blackboard)
 	{
-		Blackboard->SetValueAsBool(PlayerHasPickupName, bInPlayerHasPickup);
+		Blackboard->SetValueAsBool(PlayerHasPickupName, bInPlayerHasPickUp);
 	}
 }

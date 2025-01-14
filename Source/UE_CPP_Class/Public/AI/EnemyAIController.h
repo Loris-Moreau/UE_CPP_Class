@@ -17,9 +17,14 @@ class UE_CPP_CLASS_API AEnemyAIController : public AAIController
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree")
 	class UBehaviorTree* EnemyBehaviourTree = nullptr;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
 	FName PlayerHasPickupName = "PlayerHasPickup";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
+	FName EnemyIsInDefenseSphereName = "EnemyIsInDefenseSphere";
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
+	FName EnemyIsInAttackSphereName = "EnemyIsInAttackSphere";
 
 protected:
 	UFUNCTION()

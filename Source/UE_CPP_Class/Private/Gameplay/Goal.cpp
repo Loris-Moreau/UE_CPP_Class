@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/World.h"
 #include "Gameplay/PickUpComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -23,6 +24,14 @@ AGoal::AGoal(const FObjectInitializer& ObjectInitializer)
 	{
 		pointLight->SetupAttachment(RootComponent);
 	}
+
+	// AI Sphere
+	
+	AIBehaviourCollisionSphere = ObjectInitializer.CreateDefaultSubobject<USphereComponent>(this, "AIBehaviourSphere");
+	if(AIBehaviourCollisionSphere)
+	{
+		AIBehaviourCollisionSphere->SetupAttachment(RootComponent);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +47,19 @@ void AGoal::BeginPlay()
 	else 
 	{
 		UE_LOG(LogTemp, Error, TEXT("Goal Collision Box Missing"));
+	}
+
+	// Bind to sphere Events
+	if(AIBehaviourCollisionSphere)
+	{
+		AIBehaviourCollisionSphere->OnComponentBeginOverlap.AddUniqueDynamic(
+			this, &AGoal::OnAICollisionSphereBeginOverlap);
+		AIBehaviourCollisionSphere->OnComponentEndOverlap.AddUniqueDynamic(
+			this, &AGoal::OnAICollisionSphereEndOverlap);
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Goal Sphere Missing"));
 	}
 }
 
@@ -84,6 +106,18 @@ void AGoal::UpdatePointLight()
  		return;
 	
 	pointLight->SetLightColor(FLinearColor::Red);
+}
+
+void AGoal::OnAICollisionSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	OnAISphereOverlap.Broadcast(true, BehaviourType, OtherActor);
+}
+
+void AGoal::OnAICollisionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	OnAISphereOverlap.Broadcast(false, BehaviourType, OtherActor);
 }
 
 #if WITH_EDITOR
