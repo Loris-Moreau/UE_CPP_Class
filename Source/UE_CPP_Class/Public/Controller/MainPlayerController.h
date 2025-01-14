@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -87,7 +85,7 @@ protected:
 	
 // End of Pause
 
-	// Keybindings
+// Keybindings
 protected:
 	class UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = nullptr;
 	class UEnhancedInputUserSettings* EnhancedInputUserSettings = nullptr;
@@ -96,5 +94,15 @@ public:
 	void OnUpdateBindedKey(FName InputName, FKey NewKey);
 	void OnResetBindedKey(FName InputName, struct FEnhancedActionKeyMapping& ActionKeyMapping, class UKeyMappingCommonAW* InWidget);
 
-	// End of Keybindings
+// End of Keybindings
+	
+// Save Game
+protected:
+	UPROPERTY(EditAnywhere, Category = "Save")
+	FString SaveOptionSlotName = "OptionSaveSlot";
+	
+public:
+	void SaveOptionData();
+	void LoadOptionData();
+// End of Save Game
 };

@@ -1,30 +1,33 @@
 #include "Controller/MainPlayerController.h"
 
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
+#include "EnhancedActionKeyMapping.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
-#include "UserSettings/EnhancedInputUserSettings.h"
-
-#include "Player/Main_Player.h"
+#include "InputMappingContext.h"
+#include "PlayerMappableKeySettings.h"
 #include "Controller/GravityGunController.h"
 #include "Controller/PickupSpawnerControllerComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "GameFramework/GameUserSettings.h"
-#include "EnhancedActionKeyMapping.h"
-#include "PlayerMappableKeySettings.h"
-
-#include "Kismet/GameplayStatics.h"
 #include "Gameplay/Goal.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/Main_Player.h"
+#include "Save/OptionSaveGame.h"
 #include "UI/KeyMappingCommonAW.h"
 #include "UI/PauseMenuCommonAW.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Load Save Data
+	LoadOptionData();
+
+	// Goal & Scoring
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGoal::StaticClass(), GoalArray);
 	for (AActor* Goal : GoalArray)
 	{
@@ -162,11 +165,15 @@ float AMainPlayerController::GetMouseSensitivityY() const
 void AMainPlayerController::SetMouseSensitivityX(float inValue)
 {
 	MouseSensitivityX = inValue;
+	
+	SaveOptionData();
 }
 
 void AMainPlayerController::SetMouseSensitivityY(float inValue)
 {
 	MouseSensitivityY = inValue;
+	
+	SaveOptionData();
 }
 
 void AMainPlayerController::AddPitchInput(float Value)
@@ -274,4 +281,47 @@ void AMainPlayerController::OnResetBindedKey(FName InputName, FEnhancedActionKey
 	// So we just need to send it back with the right key.
 	ActionKeyMapping.Key = DefaultKey;
 	InWidget->SetInputSelector(ActionKeyMapping);
+}
+
+void AMainPlayerController::SaveOptionData()
+{
+	// Try to Get Save File
+	UOptionSaveGame* OptionSaveGame = nullptr;
+	if(UGameplayStatics::DoesSaveGameExist(SaveOptionSlotName, 0))
+	{
+		OptionSaveGame =
+			Cast<UOptionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveOptionSlotName, 0));
+	}
+	// if it doesnt exist create it
+	else
+	{
+		OptionSaveGame =
+			Cast<UOptionSaveGame>(UGameplayStatics::CreateSaveGameObject(UOptionSaveGame::StaticClass()));
+	}
+	// Update Data in Save File
+	OptionSaveGame->SetMouseSensitivityX(MouseSensitivityX);
+	OptionSaveGame->SetMouseSensitivityY(MouseSensitivityY);
+
+	// Save Data
+	UGameplayStatics::SaveGameToSlot(OptionSaveGame, SaveOptionSlotName, 0);
+}
+
+void AMainPlayerController::LoadOptionData()
+{
+	// Try to Get Save File
+	UOptionSaveGame* OptionSaveGame = nullptr;
+	if(UGameplayStatics::DoesSaveGameExist(SaveOptionSlotName, 0))
+	{
+		OptionSaveGame =
+			Cast<UOptionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveOptionSlotName, 0));
+	}
+	// if it doesn't exist we have nothing to load
+	else
+	{
+		return;
+	}
+
+	// Load Data
+	MouseSensitivityX = OptionSaveGame->GetMouseSensitivityX();
+	MouseSensitivityY = OptionSaveGame->GetMouseSensitivityY();
 }
