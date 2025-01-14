@@ -18,6 +18,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/Goal.h"
+#include "UI/KeyMappingCommonAW.h"
 #include "UI/PauseMenuCommonAW.h"
 
 void AMainPlayerController::BeginPlay()
@@ -255,5 +256,22 @@ void AMainPlayerController::OnResetBindedKey(FName InputName, FEnhancedActionKey
 	CurrentKeyArgs.Slot = EPlayerMappableKeySlot::First;
 
 	// Get the key profile to find the default data
-	
+	UEnhancedPlayerMappableKeyProfile* KeyProfile = EnhancedInputUserSettings->GetCurrentKeyProfile();
+	if (!KeyProfile)
+	{
+		return;
+	}
+
+	// Get Default Key
+	FPlayerKeyMapping* DefaultKeyMapping = KeyProfile->FindKeyMapping(CurrentKeyArgs);
+	FKey DefaultKey = DefaultKeyMapping->GetDefaultKey();
+
+	// Set back to Default Key
+	OnUpdateBindedKey(InputName, DefaultKey);
+
+	// Update the display
+	// In the argument of the func we already have the required struct.
+	// So we just need to send it back with the right key.
+	ActionKeyMapping.Key = DefaultKey;
+	InWidget->SetInputSelector(ActionKeyMapping);
 }
