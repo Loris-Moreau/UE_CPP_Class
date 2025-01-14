@@ -9,6 +9,7 @@
 #include "GravityGunComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNumPickupDelegate, int, pickupTaken);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerHasPickupDelegate, bool, PlayerHasPickup);
 
 UCLASS(Abstract, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_CPP_CLASS_API UGravityGunComponent : public UActorComponent
@@ -150,4 +151,8 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
+
+	//AI
+public:
+	FPlayerHasPickupDelegate OnPlayerHasPickup;
 };

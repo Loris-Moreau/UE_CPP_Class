@@ -11,11 +11,19 @@ class UE_CPP_CLASS_API AEnemyAIController : public AAIController
 
 	AEnemyAIController();
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void BeginPlay() override;
 	
 // Component
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree")
 	class UBehaviorTree* EnemyBehaviourTree = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
+	FName PlayerHasPickupName = "PlayerHasPickup";
+
+protected:
+	UFUNCTION()
+	void OnPlayerHasPickup(bool bInPlayerHasPickup);
 	
 // End of Component
 };

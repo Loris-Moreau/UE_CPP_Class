@@ -110,6 +110,9 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 
 	PickupTaken++;
 	onPickupTaken.Broadcast(PickupTaken);
+
+	// Send event to AI
+	OnPlayerHasPickup.Broadcast(true);
 }
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
@@ -243,6 +246,9 @@ void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
 	CurrentPickUp = nullptr;
 	CurrentPickUpComponent = nullptr;
 	CurrentPickUpStaticMesh = nullptr;
+
+	// send event to AI
+	OnPlayerHasPickup.Broadcast(false);
 }
 
 void UGravityGunComponent::OnHoldPickUpDestroyed()
