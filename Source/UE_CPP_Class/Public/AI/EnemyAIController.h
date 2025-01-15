@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "AIEnums.h"
+#include "AI/AI_Speed_DataAsset.h"
 #include "EnemyAIController.generated.h"
 
 UCLASS(Abstract)
@@ -40,4 +41,21 @@ protected:
 	UFUNCTION()
 	void OnActorOverlapAISphere( bool bIsOverlaped, EAIBehaviourType BehaviourType, AActor* OverlapedActor);
 // End of Component
+
+// Speed
+protected:
+	UPROPERTY(EditAnywhere, Category="Enemy Control | Speed")
+	UAI_Speed_DataAsset* SpeedDataAsset = nullptr;
+
+public:
+	float GetSpeedType(EAISpeedType InType) const;
+//End of speed
+
+	// Ai Sphere
+protected:
+	UPROPERTY(EditAnywhere, Category="Enemy Controler | Defense")
+	float MaxDistanceFromGoal = 500.0f;
+
+public:
+	float GetMaxDistanceFromGoal() const;
 };

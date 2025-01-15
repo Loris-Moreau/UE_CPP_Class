@@ -1,13 +1,12 @@
 ﻿#include "AI/EnemyAIController.h"
 
-#include "Kismet/GameplayStatics.h"
-
+#include "AI/Enemy.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "AI/Enemy.h"
 #include "Gameplay/Goal.h"
-#include "Player/Main_Player.h"
 #include "Gameplay/GravityGunComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/Main_Player.h"
 
 
 AEnemyAIController::AEnemyAIController()
@@ -85,4 +84,16 @@ void AEnemyAIController::OnActorOverlapAISphere(bool bIsOverlaped, EAIBehaviourT
 	Blackboard->SetValueAsBool(BehaviourType == EAIBehaviourType::Attack ?
 		EnemyIsInAttackSphereName : EnemyIsInDefenseSphereName, bIsOverlaped);
 	
+}
+
+float AEnemyAIController::GetSpeedType(EAISpeedType InType) const
+{
+	if(!SpeedDataAsset) return 0.0f;
+
+	return SpeedDataAsset->SpeedTypeArray[(uint8)InType];
+}
+
+float AEnemyAIController::GetMaxDistanceFromGoal() const
+{
+	return MaxDistanceFromGoal;
 }
