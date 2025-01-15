@@ -75,6 +75,8 @@ protected:
 
 public:
 	FAISphereOverlapDelegate OnAISphereOverlap;
+
+	EAIBehaviourType GetBehaviourType();
 	
 protected:
 	UFUNCTION()
