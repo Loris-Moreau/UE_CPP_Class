@@ -4,7 +4,8 @@
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-
+#include "AI/Enemy.h"
+#include "Gameplay/Goal.h"
 #include "Player/Main_Player.h"
 #include "Gameplay/GravityGunComponent.h"
 
@@ -37,6 +38,25 @@ void AEnemyAIController::BeginPlay()
 			GravityGunComponent->OnPlayerHasPickup.AddUniqueDynamic(this, &AEnemyAIController::OnPlayerHasPickup);
 		}
 	}
+
+	// Goal
+	if(AEnemy* EnemyCharacter = Cast<AEnemy>(GetCharacter()))
+	{
+		// Get Goals
+		AGoal* PlayerGoal = EnemyCharacter->GetPlayerGoal();
+		AGoal* EnemyGoal = EnemyCharacter->GetEnemyGoal();
+		
+		if(PlayerGoal && EnemyGoal && Blackboard)
+		{
+			// Set Blackboard Values
+			Blackboard->SetValueAsObject(AttackGoalName, PlayerGoal);
+			Blackboard->SetValueAsObject(DefenseGoalName, EnemyGoal);
+
+			// Bind Goal Overlap Event
+			PlayerGoal->OnAISphereOverlap.AddUniqueDynamic(this, &AEnemyAIController::OnActorOverlapAISphere);
+			EnemyGoal->OnAISphereOverlap.AddUniqueDynamic(this, &AEnemyAIController::OnActorOverlapAISphere);
+		}
+	}
 }
 
 void AEnemyAIController::OnPlayerHasPickup(bool bInPlayerHasPickUp)
@@ -46,4 +66,23 @@ void AEnemyAIController::OnPlayerHasPickup(bool bInPlayerHasPickUp)
 	{
 		Blackboard->SetValueAsBool(PlayerHasPickupName, bInPlayerHasPickUp);
 	}
+}
+
+void AEnemyAIController::OnActorOverlapAISphere(bool bIsOverlaped, EAIBehaviourType BehaviourType, AActor* OverlapedActor)
+{
+	// Check if it's the Enemy
+	AEnemy* Enemy = Cast<AEnemy>(OverlapedActor);
+	if(!Enemy)
+	{
+		return;
+	}
+
+	// Update Blackboard Values
+	if(!Blackboard)
+	{
+		return;
+	}
+	Blackboard->SetValueAsBool(BehaviourType == EAIBehaviourType::Attack ?
+		EnemyIsInAttackSphereName : EnemyIsInDefenseSphereName, bIsOverlaped);
+	
 }

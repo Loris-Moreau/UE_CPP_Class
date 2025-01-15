@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "AIEnums.h"
 #include "EnemyAIController.generated.h"
 
 UCLASS(Abstract)
@@ -26,9 +27,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
 	FName EnemyIsInAttackSphereName = "EnemyIsInAttackSphere";
 
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
+	FName AttackGoalName = "AttackGoal";
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
+	FName DefenseGoalName = "DefenseGoal";
+
 protected:
 	UFUNCTION()
 	void OnPlayerHasPickup(bool bInPlayerHasPickup);
-	
+
+
+	UFUNCTION()
+	void OnActorOverlapAISphere( bool bIsOverlaped, EAIBehaviourType BehaviourType, AActor* OverlapedActor);
 // End of Component
 };
