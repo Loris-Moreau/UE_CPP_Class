@@ -2,7 +2,7 @@
 
 EBTNodeResult::Type UBTTaskNode_FindDefenseLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	return Super::ExecuteTask(OwnerComp, NodeMemory);
+	return EBTNodeResult::Type();
 }
 
 void UBTTaskNode_FindDefenseLocation::DescribeRuntimeValues(const UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,

@@ -3,10 +3,10 @@
 #include "AI/AITargetPoint.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
 
-// we need to create the constructor in the cpp
+// We need to create the constructor in the cpp
 UEnvQueryTest_TargetAIBehavior::UEnvQueryTest_TargetAIBehavior(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	// Indicate the test cost & return Item Type
+	// Indicate the test's cost and return item type
 	Cost = EEnvTestCost::Low;
 	ValidItemType = UEnvQueryItemType_ActorBase::StaticClass();
 
@@ -16,28 +16,28 @@ UEnvQueryTest_TargetAIBehavior::UEnvQueryTest_TargetAIBehavior(const FObjectInit
 
 void UEnvQueryTest_TargetAIBehavior::RunTest(FEnvQueryInstance& QueryInstance) const
 {
-	// Check if we've got an owwner
+	// Check if we've got an owner
 	UObject* QuerierOwner = QueryInstance.Owner.Get();
 	if(!QuerierOwner) return;
 
-	// we need to prepare this value, so we can use the user's info
+	// We need to prepare this value so we can use the user's info
 	BoolValue.BindData(QuerierOwner, QueryInstance.QueryID);
 	bool bWantsValid = BoolValue.GetValue();
 
-	// Try to Cast each Instance as a Target Point
+	// Try to cast each instance as a Target Point
 	for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
 	{
 		if (const AAITargetPoint* TargetPoint = Cast<AAITargetPoint>(GetItemActor(QueryInstance, It.GetIndex())))
 		{
-			// Check if there is the correct behavior Type
+			// Check if we have the correct Behavior Type
 			if(TargetPoint->GetTargetBehaviorType() == TargetBehaviorType)
 			{
-				// correct one, pass
+				// Correct one, it passed
 				It.SetScore(TestPurpose, FilterType, true, bWantsValid);
 			}
 			else
 			{
-				// incorrect one, fail
+				// Not correct one, it failed
 				It.ForceItemState(EEnvItemStatus::Failed);
 			}
 		}
@@ -47,9 +47,9 @@ void UEnvQueryTest_TargetAIBehavior::RunTest(FEnvQueryInstance& QueryInstance) c
 
 FText UEnvQueryTest_TargetAIBehavior::GetDescriptionTitle() const
 {
-	// get the current Title
-	FString BehaviorString = TargetBehaviorType == EAIBehaviourType::Attack ? "Attack Behavior" : "Defense Behavior";
-
+	// Get the current description
+	FString BehaviorString;
+	
 	switch (TargetBehaviorType)
 	{
 	case EAIBehaviourType::None:
@@ -67,7 +67,7 @@ FText UEnvQueryTest_TargetAIBehavior::GetDescriptionTitle() const
 		
 	}
 	
-	// return the Parents Title and this one
+	// Add the parent's one with it
 	return FText::FromString(FString::Printf(TEXT("%s : %s"), *Super::GetDescriptionTitle().ToString(), *BehaviorString));
 	
 }

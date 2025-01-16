@@ -5,6 +5,7 @@
 
 EBTNodeResult::Type UBTTask_UpdateSpeed::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	// Get the Character & Controller
 	if(EnemyController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner()))
 	{
 		EnemyCharacter = Cast<AEnemy>(EnemyController->GetPawn());
@@ -16,7 +17,7 @@ EBTNodeResult::Type UBTTask_UpdateSpeed::ExecuteTask(UBehaviorTreeComponent& Own
 	// Get the Speed
 	CharacterSpeed = EnemyController->GetSpeedType(SpeedType);
 
-	// apply the speed
+	// Apply the speed
 	EnemyCharacter->GetCharacterMovement()->MaxWalkSpeed = CharacterSpeed;
 
 	return EBTNodeResult::Succeeded;

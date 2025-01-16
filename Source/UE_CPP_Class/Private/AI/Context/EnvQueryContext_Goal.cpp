@@ -7,9 +7,7 @@
 
 void UEnvQueryContext_Goal::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const
 {
-	Super::ProvideContext(QueryInstance, ContextData);
-
-	// Check Querier
+	// Check if we've got a Querier
 	UObject* QuerierObject = QueryInstance.Owner.Get();
 	if(!QuerierObject) return;
 	// Check Goal BP
