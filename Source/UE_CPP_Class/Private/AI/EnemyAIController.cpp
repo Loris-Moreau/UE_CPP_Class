@@ -11,7 +11,7 @@
 
 AEnemyAIController::AEnemyAIController()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
@@ -56,6 +56,10 @@ void AEnemyAIController::BeginPlay()
 			EnemyGoal->OnAISphereOverlap.AddUniqueDynamic(this, &AEnemyAIController::OnActorOverlapAISphere);
 		}
 	}
+
+	// Fix cause AI is inside Defense Sphere
+	// do only if the AI is in defense Sphere at beginplay 
+	Blackboard->SetValueAsBool(EnemyIsInDefenseSphereName, true);
 }
 
 void AEnemyAIController::OnPlayerHasPickup(bool bInPlayerHasPickUp)

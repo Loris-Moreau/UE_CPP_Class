@@ -20,7 +20,7 @@ void UEnvQueryTest_TargetAIBehavior::RunTest(FEnvQueryInstance& QueryInstance) c
 	UObject* QuerierOwner = QueryInstance.Owner.Get();
 	if(!QuerierOwner) return;
 
-	// We need to prepare this value so we can use the user's info
+	// We need to prepare this value, so we can use the user's info
 	BoolValue.BindData(QuerierOwner, QueryInstance.QueryID);
 	bool bWantsValid = BoolValue.GetValue();
 

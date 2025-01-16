@@ -14,6 +14,9 @@ class UE_CPP_CLASS_API UBTTaskNode_FindDefenseLocation : public UBTTaskNode
 	virtual FString GetStaticDescription() const override;
 
 protected:
+	bool FindDefenseLocation(float InMaxDistFromGoal, FVector& OutDefenceLocation);
+	
+protected:
 	TObjectPtr<class AEnemyAIController> EnemyController;
 	TObjectPtr<class AEnemy> EnemyCharacter;
 
@@ -24,5 +27,5 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Defense")
 	struct FBlackboardKeySelector EnemyGoalKey;
 	UPROPERTY(EditAnywhere, Category="Defense")
-	struct FBlackboardKeySelector DefenseLocationKey;
+	struct FBlackboardKeySelector DefenseLocationGoalKey;
 };
