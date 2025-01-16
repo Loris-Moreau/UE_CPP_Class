@@ -30,7 +30,7 @@ public:
 	void OnThrowObjectInputReleased();
 
 protected:
-	TWeakObjectPtr<class AMain_Player> Character = nullptr;
+	TWeakObjectPtr<class ACharacter> Character = nullptr;
 	TWeakObjectPtr<class APlayerCameraManager> CameraManager = nullptr;
 	
 	TWeakObjectPtr<class UPickupSpawnerComponent> pickupSpawnerComponent = nullptr;
@@ -64,8 +64,11 @@ protected:
 
 protected:
 	void UpdatePickUpLocation();
+	
+public:
 	void ReleasePickUp(bool bThrowPickUp = false);
-
+	
+protected:
 	UFUNCTION()
 	void OnHoldPickUpDestroyed();
 
@@ -155,4 +158,11 @@ public:
 	//AI
 public:
 	FPlayerHasPickupDelegate OnPlayerHasPickup;
+
+protected:
+	bool bIsPlayer = false;
+	
+public:
+	bool TryTakePickup(FVector RaycastStart, FVector RaycastEnd);
+	float GetRaycastSize() const;
 };

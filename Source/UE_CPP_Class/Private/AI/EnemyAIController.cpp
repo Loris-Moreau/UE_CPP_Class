@@ -60,6 +60,7 @@ void AEnemyAIController::BeginPlay()
 	// Fix cause AI is inside Defense Sphere
 	// do only if the AI is in defense Sphere at beginplay 
 	Blackboard->SetValueAsBool(EnemyIsInDefenseSphereName, true);
+	Blackboard->SetValueAsBool(CanTakePickupName, true);
 }
 
 void AEnemyAIController::OnPlayerHasPickup(bool bInPlayerHasPickUp)
@@ -100,4 +101,26 @@ float AEnemyAIController::GetSpeedType(EAISpeedType InType) const
 float AEnemyAIController::GetMaxDistanceFromGoal() const
 {
 	return MaxDistanceFromGoal;
+}
+
+void AEnemyAIController::OnCanTakePickupTimerOver()
+{
+	if(!Blackboard) return;
+	
+	// Update back the bool on the Blackboard
+	Blackboard->SetValueAsBool(CanTakePickupName, true);
+}
+
+void AEnemyAIController::StartCanTakePickupTimer(float InTime)
+{
+	if(!Blackboard) return;
+	
+	// Update back the bool on the Blackboard
+	Blackboard->SetValueAsBool(CanTakePickupName, true);
+
+	// Launch Timer
+	FTimerManager& TimerManager = GetCharacter()->GetWorldTimerManager();
+	TimerManager.ClearTimer(CanTakePickupTimerHandle);
+	TimerManager.SetTimer(CanTakePickupTimerHandle, this,
+		&AEnemyAIController::OnCanTakePickupTimerOver, InTime, false);
 }

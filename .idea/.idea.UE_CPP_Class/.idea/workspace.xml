@@ -12,16 +12,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db7dbea7-29cf-4304-a5dd-80bf0ed99186" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Content/AI/AI_BP_GravityGunComp.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/AI/EQS/BP_EQSTesting.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Content/AI/EQS/EQS_AttackLocation.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTaskNode_TakePickup.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTask_ThrowPickup.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTaskNode_TakePickup.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTask_ThrowPickup.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_CPP_Class/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_CPP_Class/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/AI/AI_BP_EnemyController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/AI_BP_EnemyController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/AI_BP_Enemy_Base.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/AI_BP_Enemy_Base.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/AI/Behavior/BB_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/Behavior/BB_EnemyBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/Behavior/BP_EQSTesting.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/AI/Behavior/BT_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/Behavior/BT_EnemyBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/EQS/EQS_FindPickup.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/EQS/EQS_FindPickup.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/EQS/EQS_TargetPointAttack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/EQS/EQS_TargetPointAttack.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/AI/EQS/EQS_TargetPointDefense.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/AI/EQS/EQS_TargetPointDefense.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/LVL_Gym.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/LVL_Gym.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/EnemyAIController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/EnemyAIController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTaskNode_FindDefenseLocation.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTaskNode_FindDefenseLocation.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Test/EnvQueryTest_TargetAIBehavior.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Test/EnvQueryTest_TargetAIBehavior.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTaskNode_FindDefenseLocation.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTaskNode_FindDefenseLocation.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/Gameplay/GravityGunComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Private/Gameplay/GravityGunComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/EnemyAIController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/EnemyAIController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/Gameplay/GravityGunComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_CPP_Class/Public/Gameplay/GravityGunComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,18 +43,27 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/AITargetPoint.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Context/EnvQueryContext_Goal.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://E:/Github/UE_CPP_Class/Source/UE_CPP_Class/Private/AI/Context/EnvQueryContext_Goal.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTaskNode_FindDefenseLocation.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTaskNode_TakePickup.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTask_ThrowPickup.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Tasks/BTTask_UpdateSpeed.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://E:/Github/UE_CPP_Class/Source/UE_CPP_Class/Private/AI/Tasks/BTTask_UpdateSpeed.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Private/AI/Test/EnvQueryTest_TargetAIBehavior.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://E:/Github/UE_CPP_Class/Source/UE_CPP_Class/Private/AI/Test/EnvQueryTest_TargetAIBehavior.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/AITargetPoint.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/AI_Speed_DataAsset.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Context/EnvQueryContext_Goal.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTaskNode_FindDefenseLocation.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTaskNode_TakePickup.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTask_ThrowPickup.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Tasks/BTTask_UpdateSpeed.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_CPP_Class/Public/AI/Test/EnvQueryTest_TargetAIBehavior.h" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -529,7 +549,7 @@
       <workItem from="1736950370970" duration="1515000" />
       <workItem from="1736951917708" duration="8757000" />
       <workItem from="1737029536444" duration="465000" />
-      <workItem from="1737032271870" duration="4388000" />
+      <workItem from="1737032271870" duration="13466000" />
     </task>
     <servers />
   </component>

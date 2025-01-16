@@ -10,7 +10,7 @@
 EBTNodeResult::Type UBTTaskNode_FindDefenseLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// Get the Character & Controller
-	if(EnemyController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner()))
+	if((EnemyController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner())))
 	{
 		EnemyCharacter = Cast<AEnemy>(EnemyController->GetPawn());
 	}
@@ -44,8 +44,6 @@ void UBTTaskNode_FindDefenseLocation::DescribeRuntimeValues(const UBehaviorTreeC
 	Values.Add(FString::Printf(TEXT("Defense Loc Found : it's %s"), *DefenseLocation.ToString()));
 	
 	Super::DescribeRuntimeValues(OwnerComp, NodeMemory, Verbosity, Values);
-
-	
 }
 
 FString UBTTaskNode_FindDefenseLocation::GetStaticDescription() const
@@ -59,7 +57,7 @@ FString UBTTaskNode_FindDefenseLocation::GetStaticDescription() const
 		+ " - Defense Location : " + DefenseLocationGoalKey.SelectedKeyName.ToString();
 	}
 	
-	return FString::Printf(TEXT("%s : %s"), * Super::GetStaticDescription(), *Description);
+	return FString::Printf(TEXT("%s : %s"), *Super::GetStaticDescription(), *Description);
 }
 
 bool UBTTaskNode_FindDefenseLocation::FindDefenseLocation(float InMaxDistFromGoal,

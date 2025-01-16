@@ -58,4 +58,15 @@ protected:
 
 public:
 	float GetMaxDistanceFromGoal() const;
+
+// Pickup Timer
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Controller | Behaviour Tree | Blackboard")
+	FName CanTakePickupName = "CanTakePickup";
+	FTimerHandle CanTakePickupTimerHandle;
+
+	void OnCanTakePickupTimerOver();
+
+public:
+	void StartCanTakePickupTimer(float InTime);
 };

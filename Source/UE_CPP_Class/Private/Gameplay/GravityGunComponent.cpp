@@ -23,11 +23,15 @@ void UGravityGunComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Character = Cast<AMain_Player>(GetOwner());
+	Character = Cast<ACharacter>(GetOwner());
 	CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 	GravityGunCollisionChannel = UEngineTypes::ConvertToCollisionChannel(GravityGunCollisionTraceChannel);
 
 	pickupSpawnerComponent = Character->GetComponentByClass<UPickupSpawnerComponent>();
+
+	// Check who is using the Grav Gun
+	//bIsPlayer = Cast<AMain_Player>(Character);
+	bIsPlayer = Character->GetClass()->IsChildOf(AMain_Player::StaticClass());
 }
 
 
@@ -52,67 +56,8 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 	const FVector RaycastStart = CameraManager->GetCameraLocation();
 	const FVector RaycastEnd = RaycastStart + (CameraManager->GetActorForwardVector() * RaycastSize);
 
-	// Second - Prepare raycast params
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Character.Get());
-
-	// Third - Launch the raycast
-#if !UE_BUILD_SHIPPING
-	if(bDrawDebugRaycast)
-		DrawDebugLine(GetWorld(), RaycastStart, RaycastEnd, FColor::Red, false, TimerDebugRaycast, 0, 3.5f);
-#endif
-
-	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
-	if (!bHit)
-		return;
-	
-
-	// Check for PickUp Component
-	CurrentPickUpComponent = HitResult.GetActor()->GetComponentByClass<UPickUpComponent>();
-	if (!CurrentPickUpComponent.IsValid())
-		return;
-
-	// Check for Mesh component
-	CurrentPickUpStaticMesh = HitResult.GetActor()->GetComponentByClass<UStaticMeshComponent>();
-	if (!CurrentPickUpStaticMesh.IsValid())
-		return;
-
-	// Get its pointer
-	CurrentPickUp = HitResult.GetActor();
-	
-	// Disable the physics
-	CurrentPickUpStaticMesh->SetSimulatePhysics(false);
-
-	// Update the collision profile
-	PreviousCollisionProfileName = CurrentPickUpStaticMesh->GetCollisionProfileName();
-	CurrentPickUpStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
-
-	// Check if destruction is required
-	switch (CurrentPickUpComponent->GetPickUpType())
-	{
-		case EPickUpType::DestroyAfterPickUp:
-			// Launch the timer
-			CurrentPickUpComponent->StartPickUpDestructionTimer();
-
-			// Bind our callback on the event
-			CurrentPickUpComponent->OnPickUpDestroyed.AddUniqueDynamic(this, &UGravityGunComponent::OnHoldPickUpDestroyed);
-			break;
-
-		case EPickUpType::DestroyAfterThrow:
-			// Clear the timer, so it doesn't disappear in our hands
-			CurrentPickUpComponent->ClearDestructionTimer();
-			break;
-
-		default:
-			break;
-	}
-
-	PickupTaken++;
-	onPickupTaken.Broadcast(PickupTaken);
-
-	// Send event to AI
-	OnPlayerHasPickup.Broadcast(true);
+	// split this func for the AI
+	TryTakePickup(RaycastStart, RaycastEnd);
 }
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
@@ -172,12 +117,24 @@ void UGravityGunComponent::OnThrowObjectInputReleased()
 void UGravityGunComponent::UpdatePickUpLocation()
 {
 	// Make sure we have something to update
-	if (!CurrentPickUp.IsValid())
-		return;
+	if (!CurrentPickUp.IsValid()) return;
+	
+	// Compute its new location - Depends on the Type of Character
+	
+	FVector NewPickUpLocation;
+	FRotator NewPickUpRotation;
 
-	// Compute its new location
-	const FVector NewPickUpLocation = CameraManager->GetCameraLocation() + (CameraManager->GetActorForwardVector() * PickUpDistanceFromPlayer) + (CameraManager->GetActorUpVector() * PickUpHeightFromPlayer);
-	const FRotator NewPickUpRotation = CameraManager->GetCameraRotation();
+	if(bIsPlayer)
+	{
+	NewPickUpLocation = CameraManager->GetCameraLocation() + (CameraManager->GetActorForwardVector() * PickUpDistanceFromPlayer) + (CameraManager->GetActorUpVector() * PickUpHeightFromPlayer);
+	NewPickUpRotation = CameraManager->GetCameraRotation();
+	}
+	else
+	{
+		NewPickUpLocation = Character->GetActorLocation() + (Character->GetActorForwardVector()
+			* PickUpDistanceFromPlayer) + (Character->GetActorUpVector() * PickUpHeightFromPlayer);
+		NewPickUpRotation = Character->GetActorRotation();
+	}
 	CurrentPickUp->SetActorLocationAndRotation(NewPickUpLocation, NewPickUpRotation);
 }
 
@@ -222,8 +179,10 @@ void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
 			ThrowForceAlpha = FMath::Clamp(CurrentTimeToReachMaxThrowForce / TimeToReachMaxThrowForce, 0.f, 1.f);
 			ThrowForce = FMath::Lerp(PickUpThrowForce, PickUpMaxThrowForce, ThrowForceAlpha) * CurrentPickUpThrowForceMultiplier;
 		}
+
+		FVector ImpusleDirection = bIsPlayer ? CameraManager->GetActorForwardVector() : GetOwner()->GetActorForwardVector();
+		FVector Impusle = ImpusleDirection * ThrowForce;
 		
-		const FVector Impusle = CameraManager->GetActorForwardVector() * ThrowForce;
 		CurrentPickUpStaticMesh->AddImpulse(Impusle);
 
 		FVector AngularImpulse;
@@ -248,7 +207,10 @@ void UGravityGunComponent::ReleasePickUp(bool bThrowPickUp)
 	CurrentPickUpStaticMesh = nullptr;
 
 	// send event to AI
-	OnPlayerHasPickup.Broadcast(false);
+	if(bIsPlayer)
+	{
+		OnPlayerHasPickup.Broadcast(false);
+	}
 }
 
 void UGravityGunComponent::OnHoldPickUpDestroyed()
@@ -340,3 +302,74 @@ void UGravityGunComponent::PostEditChangeProperty(FPropertyChangedEvent& Propert
 	}
 }
 #endif
+
+bool UGravityGunComponent::TryTakePickup(FVector RaycastStart, FVector RaycastEnd)
+{
+	// Second - Prepare raycast params
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Character.Get());
+
+	// Third - Launch the raycast
+#if !UE_BUILD_SHIPPING
+	if(bDrawDebugRaycast)
+		DrawDebugLine(GetWorld(), RaycastStart, RaycastEnd, FColor::Red, false, TimerDebugRaycast, 0, 3.5f);
+#endif
+
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
+	if (!bHit) return false;
+	
+	// Check for PickUp Component
+	CurrentPickUpComponent = HitResult.GetActor()->GetComponentByClass<UPickUpComponent>();
+	if (!CurrentPickUpComponent.IsValid()) return false;
+	
+	// Check for Mesh component
+	CurrentPickUpStaticMesh = HitResult.GetActor()->GetComponentByClass<UStaticMeshComponent>();
+	if (!CurrentPickUpStaticMesh.IsValid()) return false;
+	
+	// Get its pointer
+	CurrentPickUp = HitResult.GetActor();
+	
+	// Disable the physics
+	CurrentPickUpStaticMesh->SetSimulatePhysics(false);
+	
+	// Update the collision profile
+	PreviousCollisionProfileName = CurrentPickUpStaticMesh->GetCollisionProfileName();
+	CurrentPickUpStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+	
+	// Check if destruction is required
+	switch (CurrentPickUpComponent->GetPickUpType())
+	{
+	case EPickUpType::DestroyAfterPickUp:
+		// Launch the timer
+			CurrentPickUpComponent->StartPickUpDestructionTimer();
+		
+		// Bind our callback on the event
+		CurrentPickUpComponent->OnPickUpDestroyed.AddUniqueDynamic(this, &UGravityGunComponent::OnHoldPickUpDestroyed);
+		break;
+
+	case EPickUpType::DestroyAfterThrow:
+		// Clear the timer, so it doesn't disappear in our hands
+			CurrentPickUpComponent->ClearDestructionTimer();
+		break;
+
+	default:
+		break;
+	}
+
+	PickupTaken++;
+	onPickupTaken.Broadcast(PickupTaken);
+
+	// Send event to AI
+	if(bIsPlayer)
+	{
+		OnPlayerHasPickup.Broadcast(true);
+	}
+	
+	return true;
+}
+
+float UGravityGunComponent::GetRaycastSize() const
+{
+	return RaycastSize;
+}
